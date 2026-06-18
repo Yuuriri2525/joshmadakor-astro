@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// 投稿ID形式 /blog/{id}/ を生成（旧URL維持・リダイレクト不要 / SolutionDesign §4.2, §6）。
+// draft: true の記事はビルド対象外 → sitemap にも含まれない。
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { id: String(post.data.id) },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, pubDate, updatedDate, tags } = post.data;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout title={title} description={description ?? title}>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <a href="/blog/" class="text-blue-400 hover:text-blue-300 text-sm">← Back to blog</a>
+    <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-3">{title}</h1>
+    <p class="text-gray-400 text-sm mb-2">
+      <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
+      {updatedDate && <span> · Updated {fmt(updatedDate)}</span>}
+    </p>
+    {tags.length > 0 && (
+      <ul class="flex flex-wrap gap-2 mb-8">
+        {tags.map((tag) => (
+          <li class="text-xs px-2 py-1 rounded bg-gray-800 text-gray-300">#{tag}</li>
+        ))}
+      </ul>
+    )}
+    {/* TODO(Phase4): @tailwindcss/typography を導入して .prose で本文を整形する */}
+    <div class="blog-content space-y-4 leading-relaxed text-gray-200">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
