@@ -1,0 +1,112 @@
+---
+import MobileMenu from './MobileMenu.tsx';
+
+// Exams は当面 lognpacific.com の practice tests への外部リンク（SolutionDesign §5）。
+// 新 IT Exams ページ完成後に内部URLへ差し替える。
+const EXAMS_URL = 'https://lognpacific.com/free-certification-practice-tests/';
+---
+
+<header id="header" class="sticky top-0 z-50 bg-transparent transition-all duration-300 border-b border-gray-800/0 hover:border-gray-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo (TODO: 実ロゴ資産が用意でき次第 <Image> に差し替え) -->
+      <a href="/" class="flex items-center flex-shrink-0 text-xl font-bold tracking-tight text-white">
+        Josh Madakor
+      </a>
+
+      <!-- Navigation Links (Desktop) -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="/" class="text-gray-300 hover:text-white transition">Home</a>
+        <a href="/cyber" class="text-gray-300 hover:text-white transition">Cyber</a>
+        <a href="/blog/" class="text-gray-300 hover:text-white transition">Blog</a>
+        <a href={EXAMS_URL} target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition">Exams</a>
+      </nav>
+
+      <!-- Right Section -->
+      <div class="flex items-center gap-4">
+        <!-- SNS Links -->
+        <div class="hidden sm:flex items-center gap-3">
+
+          <a
+            href="https://twitter.com/joshmadakor"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-400 hover:text-white transition"
+            aria-label="X (Twitter)"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 1200 1227" xmlns="http://www.w3.org/2000/svg">
+              <path d="m714.163 519.284 446.727-519.284h-105.86l-387.893 450.887-309.809-450.887h-357.328l468.492 681.821-468.492 544.549h105.866l409.625-476.152 327.181 476.152h357.328l-485.863-707.086zm-144.998 168.544-47.468-67.894-377.686-540.2396h162.604l304.797 435.9906 47.468 67.894 396.2 566.721h-162.604l-323.311-462.446z" />
+            </svg>
+          </a>
+          <a
+            href="https://www.instagram.com/joshmadakor/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-400 hover:text-white transition"
+            aria-label="Instagram"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2" />
+              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37Z" fill="none" stroke="currentColor" stroke-width="2" />
+              <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
+            </svg>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/joshmadakor"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-400 hover:text-white transition"
+            aria-label="LinkedIn"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+              <circle cx="4" cy="4" r="2" />
+            </svg>
+          </a>
+          <a
+            href="https://www.youtube.com/@JoshMadakor"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-gray-400 hover:text-white transition"
+            aria-label="YouTube"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.54c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z" />
+              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#000" />
+            </svg>
+          </a>
+        </div>
+
+
+        <!-- Mobile Menu Toggle -->
+        <MobileMenu exams={EXAMS_URL} client:load />
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  #header {
+    background-color: transparent;
+  }
+
+  #header.scrolled {
+    background-color: rgba(17, 24, 39, 0.8);
+    backdrop-filter: blur(12px);
+  }
+</style>
+
+<script>
+  const header = document.getElementById('header');
+
+  function handleScroll() {
+    if (window.scrollY > 50) {
+      header?.classList.add('scrolled');
+    } else {
+      header?.classList.remove('scrolled');
+    }
+  }
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
+</script>
