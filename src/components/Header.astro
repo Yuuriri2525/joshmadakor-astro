@@ -1,34 +1,62 @@
 ---
+import { Image } from 'astro:assets';
 import MobileMenu from './MobileMenu.tsx';
+import logo from '../assets/images/logo.png';
 
-// Exams は当面 lognpacific.com の practice tests への外部リンク（SolutionDesign §5）。
-// 新 IT Exams ページ完成後に内部URLへ差し替える。
+// 外部リンク（DesignSpec §3.1）
+const IT_TRAINING_URL = 'https://coursecareers.com/joshmadakor';
 const EXAMS_URL = 'https://lognpacific.com/free-certification-practice-tests/';
+
+// ナビ（現行ライブと同一: Home / IT Training / Cyber Training / Exams / Blog）
+const navLinks = [
+  { label: 'Home', href: '/', external: false },
+  { label: 'IT Training', href: IT_TRAINING_URL, external: true },
+  { label: 'Cyber Training', href: '/cyber', external: false },
+  { label: 'Exams', href: EXAMS_URL, external: true },
+  { label: 'Blog', href: '/blog/', external: false },
+];
+
+// active 判定（外部リンクは常に非 active）。'/' は完全一致、それ以外は前方一致。
+const path = Astro.url.pathname;
+const isActive = (href: string, external: boolean) => {
+  if (external) return false;
+  return href === '/' ? path === '/' : path.startsWith(href);
+};
 ---
 
-<header id="header" class="sticky top-0 z-50 bg-transparent transition-all duration-300 border-b border-gray-800/0 hover:border-gray-800">
+<header id="header" class="sticky top-0 z-50 bg-transparent transition-all duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
-      <!-- Logo (TODO: 実ロゴ資産が用意でき次第 <Image> に差し替え) -->
-      <a href="/" class="flex items-center flex-shrink-0 text-xl font-bold tracking-tight text-white">
-        Josh Madakor
+      <!-- Logo -->
+      <a href="/" class="flex items-center flex-shrink-0" aria-label="LogN Pacific home">
+        <Image src={logo} alt="LogN Pacific" class="h-9 w-auto" loading="eager" />
       </a>
 
       <!-- Navigation Links (Desktop) -->
       <nav class="hidden md:flex items-center gap-8">
-        <a href="/" class="text-gray-300 hover:text-white transition">Home</a>
-        <a href="/cyber" class="text-gray-300 hover:text-white transition">Cyber</a>
-        <a href="/blog/" class="text-gray-300 hover:text-white transition">Blog</a>
-        <a href={EXAMS_URL} target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition">Exams</a>
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
+            class:list={[
+              'text-sm font-semibold tracking-wide pb-1 border-b-2 transition',
+              isActive(link.href, link.external)
+                ? 'text-white border-accent'
+                : 'text-gray-200 border-transparent hover:text-white hover:border-accent/60',
+            ]}
+          >
+            {link.label}
+          </a>
+        ))}
       </nav>
 
       <!-- Right Section -->
       <div class="flex items-center gap-4">
-        <!-- SNS Links -->
+        <!-- SNS Links (現行ヘッダー踏襲) -->
         <div class="hidden sm:flex items-center gap-3">
-
           <a
-            href="https://twitter.com/joshmadakor"
+            href="https://x.com/joshmadakor"
             target="_blank"
             rel="noopener noreferrer"
             class="text-gray-400 hover:text-white transition"
@@ -52,7 +80,7 @@ const EXAMS_URL = 'https://lognpacific.com/free-certification-practice-tests/';
             </svg>
           </a>
           <a
-            href="https://www.linkedin.com/in/joshmadakor"
+            href="https://www.linkedin.com/in/joshmadakor/"
             target="_blank"
             rel="noopener noreferrer"
             class="text-gray-400 hover:text-white transition"
@@ -77,9 +105,8 @@ const EXAMS_URL = 'https://lognpacific.com/free-certification-practice-tests/';
           </a>
         </div>
 
-
         <!-- Mobile Menu Toggle -->
-        <MobileMenu exams={EXAMS_URL} client:load />
+        <MobileMenu exams={EXAMS_URL} itTraining={IT_TRAINING_URL} client:load />
       </div>
     </div>
   </div>
@@ -91,7 +118,7 @@ const EXAMS_URL = 'https://lognpacific.com/free-certification-practice-tests/';
   }
 
   #header.scrolled {
-    background-color: rgba(17, 24, 39, 0.8);
+    background-color: rgba(2, 1, 1, 0.85);
     backdrop-filter: blur(12px);
   }
 </style>

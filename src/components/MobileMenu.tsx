@@ -1,11 +1,13 @@
 import { useState } from 'react';
 
 interface MobileMenuProps {
-  /** Exams 外部リンクURL（Header から渡される / SolutionDesign §5） */
+  /** Exams 外部リンクURL（Header から渡される / DesignSpec §3.1） */
   exams: string;
+  /** IT Training 外部リンクURL（coursecareers.com/joshmadakor） */
+  itTraining: string;
 }
 
-export default function MobileMenu({ exams }: MobileMenuProps) {
+export default function MobileMenu({ exams, itTraining }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -73,18 +75,20 @@ export default function MobileMenu({ exams }: MobileMenuProps) {
             Home
           </a>
           <a
+            href={itTraining}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded transition"
+            onClick={closeMenu}
+          >
+            IT Training
+          </a>
+          <a
             href="/cyber"
             className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded transition"
             onClick={closeMenu}
           >
-            Cyber
-          </a>
-          <a
-            href="/blog/"
-            className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded transition"
-            onClick={closeMenu}
-          >
-            Blog
+            Cyber Training
           </a>
           <a
             href={exams}
@@ -95,20 +99,27 @@ export default function MobileMenu({ exams }: MobileMenuProps) {
           >
             Exams
           </a>
+          <a
+            href="/blog/"
+            className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded transition"
+            onClick={closeMenu}
+          >
+            Blog
+          </a>
 
           {/* SNS Links in Mobile Menu */}
           <div className="border-t border-gray-800 pt-4 mt-4">
             <p className="text-sm text-gray-400 px-4 mb-3">Follow Us</p>
             <div className="flex gap-3 px-4">
               <a
-                href="https://twitter.com/joshmadakor"
+                href="https://x.com/joshmadakor"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition"
-                aria-label="Twitter"
+                aria-label="X (Twitter)"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7a10.6 10.6 0 01-9.5 5" />
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 1200 1227">
+                  <path d="m714.163 519.284 446.727-519.284h-105.86l-387.893 450.887-309.809-450.887h-357.328l468.492 681.821-468.492 544.549h105.866l409.625-476.152 327.181 476.152h357.328l-485.863-707.086zm-144.998 168.544-47.468-67.894-377.686-540.2396h162.604l304.797 435.9906 47.468 67.894 396.2 566.721h-162.604l-323.311-462.446z" />
                 </svg>
               </a>
               <a
