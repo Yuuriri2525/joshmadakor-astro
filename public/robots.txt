@@ -1,0 +1,15 @@
+# robots.txt for joshmadakor.tech
+# Generated for Astro SSG
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://joshmadakor.tech/sitemap-index.xml
+
+# Disallow admin and private areas (none currently in Astro static build)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Crawl delay to be respectful to server resources
+# Crawl-delay: 1
