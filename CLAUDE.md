@@ -62,7 +62,7 @@ joshmadakor-astro/
 │   ├── assets/
 │   │   └── images/blog/          # Astro Image で最適化される画像
 │   └── styles/
-│       └── global.css            # `@import "tailwindcss";` のみ
+│       └── global.css            # `@import "tailwindcss";` + `@theme` トークン
 ├── astro.config.mjs              # Astro 設定（Tailwind / React / Sitemap）
 ├── tsconfig.json                 # TypeScript（strict）
 ├── package.json                  # vite を overrides で ^7 に固定
@@ -114,7 +114,8 @@ const { title } = Astro.props;
 
 ### スタイリング（Tailwind CSS 4）
 - **Tailwind ユーティリティクラスを優先。** 新規 CSS ファイル・CSS-in-JS は原則作らない
-- `src/styles/global.css` は **`@import "tailwindcss";` の1行のみ**に保つ。ここに独自 CSS を足さない
+- `src/styles/global.css` は **`@import "tailwindcss";` ＋ `@theme` デザイントークンブロック**で構成する（Tailwind 4 の作法）。色・フォントは `@theme` に定義し、生成されるユーティリティ（例 `--color-accent` → `bg-accent`/`text-accent`/`border-accent`/`from-accent`）を使う。トークンと最小限の `@layer base`（body の背景・フォント）以外の独自 CSS は足さない
+- **デザイントークンは現行ライブ joshmadakor.tech の実値**（DesignSpec §2）。主要値: page `#000000` / header `#020101` / footer `#9c9c9c` / accent緑 `#60e609`(active下線) / brand青 `#15a1cc`(見出し) / ink紺 `#011640` / ボタングラデ `#6fa24a`→`#15a1cc` / フォント Montserrat
 - レスポンシブは `sm:` / `md:` / `lg:` プレフィックスを活用
 
 ---
@@ -202,7 +203,8 @@ Lighthouse は全ページ 90+ を目標（`SolutionDesign.md` §10）。
   - 関連して `astro.config.mjs` の `plugins: [tailwindcss()]` には `@ts-ignore` が付いている（別メジャーの vite 解決による Plugin 型の食い違いを抑制。ランタイムには影響しない）
 - **Exams 入口:** 当面は lognpacific.com の practice tests への**外部リンク**（`SolutionDesign.md` §5）。joshmadakor.tech の新ページ完成後に内部URLへ差し替える
 - **検索機能は実装しない**（`SolutionDesign.md` §9 Q4）
-- **ロゴ:** 現状はテキストワードマーク。実ロゴ資産は後続フェーズで差し替え予定
+- **ブランド表記:** 表示ブランドは **LOG(N) PACIFIC / "LogN Pacific"**（DesignSpec フラグ#2）。リポジトリ名・ドメイン・GA4 プロパティは joshmadakor.tech のままだが、ロゴ・サイト名・コピーライト等の**見せ方は LogN Pacific** に統一する（"Josh Madakor" のテキスト表記は使わない）
+- **ロゴ:** `src/assets/images/logo.png`（白系・現行ライブのヘッダー/フッター実使用ファイル）を Astro Image で表示。ヘッダー（暗背景）・フッター（グレー地 `#9c9c9c`）とも同一の白ロゴ。指定の SVG は空ファイルのため不採用。ベクター版が必要になれば差し替え可
 - **`@tailwindcss/typography` は未導入。** ブログ本文の `.prose` 整形はフェーズ4で導入予定
 - IT Training は coursecareers.com への外部リンク（移行対象外）
 
@@ -235,7 +237,7 @@ npm run build
 
 ### Tailwind が効かない
 - `src/styles/global.css` が `BaseLayout.astro` から import されているか確認
-- `global.css` は `@import "tailwindcss";` の1行のみであることを確認
+- `global.css` が `@import "tailwindcss";` ＋ `@theme` トークンブロックの構成であることを確認
 
 ### お問い合わせフォームが送信できない
 - `.env.local` に `PUBLIC_WEB3FORMS_KEY` を設定したか確認（`.env.example` 参照）
