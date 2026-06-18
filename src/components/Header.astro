@@ -1,7 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import MobileMenu from './MobileMenu.tsx';
-import logo from '../assets/images/logo.png';
+// 黒地ヘッダー用の白系ロゴ
+import logo from '../assets/images/logo-light.png';
 
 // 外部リンク（DesignSpec §3.1）
 const IT_TRAINING_URL = 'https://coursecareers.com/joshmadakor';
@@ -29,7 +30,7 @@ const isActive = (href: string, external: boolean) => {
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
       <a href="/" class="flex items-center flex-shrink-0" aria-label="LogN Pacific home">
-        <Image src={logo} alt="LogN Pacific" class="h-9 w-auto" loading="eager" />
+        <Image src={logo} alt="LogN Pacific" class="h-11 w-auto" loading="eager" />
       </a>
 
       <!-- Navigation Links (Desktop) -->

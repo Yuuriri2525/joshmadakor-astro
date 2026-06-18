@@ -204,7 +204,7 @@ Lighthouse は全ページ 90+ を目標（`SolutionDesign.md` §10）。
 - **Exams 入口:** 当面は lognpacific.com の practice tests への**外部リンク**（`SolutionDesign.md` §5）。joshmadakor.tech の新ページ完成後に内部URLへ差し替える
 - **検索機能は実装しない**（`SolutionDesign.md` §9 Q4）
 - **ブランド表記:** 表示ブランドは **LOG(N) PACIFIC / "LogN Pacific"**（DesignSpec フラグ#2）。リポジトリ名・ドメイン・GA4 プロパティは joshmadakor.tech のままだが、ロゴ・サイト名・コピーライト等の**見せ方は LogN Pacific** に統一する（"Josh Madakor" のテキスト表記は使わない）
-- **ロゴ:** `src/assets/images/logo.png`（白系・現行ライブのヘッダー/フッター実使用ファイル）を Astro Image で表示。ヘッダー（暗背景）・フッター（グレー地 `#9c9c9c`）とも同一の白ロゴ。指定の SVG は空ファイルのため不採用。ベクター版が必要になれば差し替え可
+- **ロゴ:** 背景に応じて2種を出し分ける（Astro Image）。ヘッダー（黒地）= `src/assets/images/logo-light.png`（白系「LOG(N)」＋グレー「PACIFIC」）、フッター（グレー地 `#9c9c9c`）= `src/assets/images/logo-dark.png`（黒系・3000×1130 高解像度）。指定の SVG は空ファイルのため不採用。ベクター版が必要になれば差し替え可
 - **`@tailwindcss/typography` は未導入。** ブログ本文の `.prose` 整形はフェーズ4で導入予定
 - IT Training は coursecareers.com への外部リンク（移行対象外）
 
