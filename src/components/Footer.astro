@@ -1,107 +1,48 @@
 ---
+import { Image } from 'astro:assets';
+import logo from '../assets/images/logo.png';
+
+// リンク（DesignSpec §3.2）。HOME はフラグ#4で lognpacific.com を指す（相互リンク維持）。
 const EXAMS_URL = 'https://lognpacific.com/free-certification-practice-tests/';
-const IT_TRAINING_URL = 'https://coursecareers.com/joshmadakor';
+const links = [
+  { label: 'HOME', href: 'https://lognpacific.com/', external: true },
+  { label: 'CYBER COURSE', href: '/cyber', external: false },
+  { label: 'IT EXAMS', href: EXAMS_URL, external: true },
+  { label: 'BLOG', href: '/blog/', external: false },
+];
 ---
 
-<footer class="bg-gray-950 border-t border-gray-800">
+<footer class="bg-footer text-ink">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-      <!-- About -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
+      <!-- Logo -->
       <div>
-        <h3 class="text-lg font-bold text-white mb-4">Josh Madakor</h3>
-        <p class="text-gray-400 text-sm">
-          Helping people launch and grow careers in IT and cybersecurity through training, community, and hands-on practice.
-        </p>
+        <Image src={logo} alt="LogN Pacific" class="h-10 w-auto" />
       </div>
 
-      <!-- Explore -->
-      <div>
-        <h3 class="text-lg font-bold text-white mb-4">Explore</h3>
-        <ul class="space-y-2">
-          <li>
-            <a href="/cyber" class="text-gray-400 hover:text-white transition text-sm">
-              Cyber
-            </a>
-          </li>
-          <li>
-            <a href="/blog/" class="text-gray-400 hover:text-white transition text-sm">
-              Blog
-            </a>
-          </li>
-          <li>
-            <a
-              href={IT_TRAINING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-gray-400 hover:text-white transition text-sm"
-            >
-              IT Training
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Resources -->
-      <div>
-        <h3 class="text-lg font-bold text-white mb-4">Resources</h3>
-        <ul class="space-y-2">
-          <li>
-            <a
-              href={EXAMS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-gray-400 hover:text-white transition text-sm"
-            >
-              IT Exams
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.youtube.com/@JoshMadakor"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-gray-400 hover:text-white transition text-sm"
-            >
-              YouTube
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Connect -->
-      <div>
-        <h3 class="text-lg font-bold text-white mb-4">Connect</h3>
-        <div class="flex gap-4">
-
+      <!-- Link column -->
+      <nav class="flex flex-col gap-3">
+        {links.map((link) => (
           <a
-            href="https://twitter.com/joshmadakor"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-gray-400 hover:text-white transition"
-            aria-label="X (Twitter)"
+            href={link.href}
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
+            class="text-sm font-semibold tracking-wide hover:text-black transition"
           >
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 1200 1227" xmlns="http://www.w3.org/2000/svg">
-              <path d="m714.163 519.284 446.727-519.284h-105.86l-387.893 450.887-309.809-450.887h-357.328l468.492 681.821-468.492 544.549h105.866l409.625-476.152 327.181 476.152h357.328l-485.863-707.086zm-144.998 168.544-47.468-67.894-377.686-540.2396h162.604l304.797 435.9906 47.468 67.894 396.2 566.721h-162.604l-323.311-462.446z" />
-            </svg>
+            {link.label}
           </a>
+        ))}
+      </nav>
+
+      <!-- Contact / SNS -->
+      <div class="md:text-right">
+        <h3 class="text-sm font-bold tracking-wide mb-4">CONTACT US</h3>
+        <div class="flex gap-4 md:justify-end">
           <a
-            href="https://www.instagram.com/joshmadakor/"
+            href="https://www.linkedin.com/in/joshmadakor/"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-gray-400 hover:text-white transition"
-            aria-label="Instagram"
-          >
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2" />
-              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37Z" fill="none" stroke="currentColor" stroke-width="2" />
-              <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
-            </svg>
-          </a>
-          <a
-            href="https://www.linkedin.com/in/joshmadakor"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-gray-400 hover:text-white transition"
+            class="hover:text-black transition"
             aria-label="LinkedIn"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -113,26 +54,45 @@ const IT_TRAINING_URL = 'https://coursecareers.com/joshmadakor';
             href="https://www.youtube.com/@JoshMadakor"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-gray-400 hover:text-white transition"
+            class="hover:text-black transition"
             aria-label="YouTube"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.54c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z" />
-              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#000" />
+              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#9c9c9c" />
+            </svg>
+          </a>
+          <a
+            href="https://x.com/joshmadakor"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-black transition"
+            aria-label="X (Twitter)"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 1200 1227" xmlns="http://www.w3.org/2000/svg">
+              <path d="m714.163 519.284 446.727-519.284h-105.86l-387.893 450.887-309.809-450.887h-357.328l468.492 681.821-468.492 544.549h105.866l409.625-476.152 327.181 476.152h357.328l-485.863-707.086zm-144.998 168.544-47.468-67.894-377.686-540.2396h162.604l304.797 435.9906 47.468 67.894 396.2 566.721h-162.604l-323.311-462.446z" />
+            </svg>
+          </a>
+          <a
+            href="https://www.instagram.com/joshmadakor/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-black transition"
+            aria-label="Instagram"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2" />
+              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37Z" fill="none" stroke="currentColor" stroke-width="2" />
+              <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
             </svg>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Divider -->
-    <div class="border-t border-gray-800 pt-8">
-      <div class="flex flex-col md:flex-row justify-between items-center">
-
-        <p class="text-gray-500 text-sm">
-          &copy; 2026 Josh Madakor. All rights reserved.
-        </p>
-      </div>
+    <!-- Divider + copyright -->
+    <div class="border-t border-black/20 mt-10 pt-6">
+      <p class="text-xs">&copy; 2026 LogN Pacific. All rights reserved.</p>
     </div>
   </div>
 </footer>
