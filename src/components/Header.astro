@@ -41,7 +41,7 @@ const isActive = (href: string, external: boolean) => {
             target={link.external ? '_blank' : undefined}
             rel={link.external ? 'noopener noreferrer' : undefined}
             class:list={[
-              'text-sm font-semibold tracking-wide pb-1 border-b-2 transition',
+              'text-sm font-normal tracking-wide pb-1 border-b-2 transition',
               isActive(link.href, link.external)
                 ? 'text-white border-accent'
                 : 'text-gray-200 border-transparent hover:text-white hover:border-accent/60',

@@ -98,9 +98,8 @@ const siteUrl = 'https://joshmadakor.tech';
     scroll-behavior: smooth;
   }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  }
+  /* body の font-family は global.css の @theme(--font-sans=Montserrat) + base layer で定義。
+     ここで system フォントを指定すると（レイヤー無しのため）Tailwind を上書きしてしまうので置かない。 */
 
   /* スクロールアニメーション */
   .scroll-animate {
