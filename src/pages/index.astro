@@ -1,52 +1,167 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ContactForm from '../components/ContactForm.tsx';
+import heroJosh from '../assets/images/hero-josh.png';
 
-// SCAFFOLD STUB — フェーズ4で Elementor 版ホーム（F1）を忠実に再現する。
-// F1: ヒーロー + 4カードナビ + CONTACT。
-
+// 4カードナビ（現行ライブと同一の順番・コピー・リンク / DesignSpec §4.3）
 const cards = [
-  { title: 'Cyber', desc: 'Hands-on cybersecurity training and community.', href: '/cyber', external: false },
-  { title: 'Blog', desc: 'Articles on IT, security, and career growth.', href: '/blog/', external: false },
-  { title: 'IT Exams', desc: 'Free certification practice tests.', href: 'https://lognpacific.com/free-certification-practice-tests/', external: true },
-  { title: 'IT Training', desc: 'Break into IT with a structured course.', href: 'https://coursecareers.com/joshmadakor', external: true },
+  {
+    title: 'CYBER TRAINING',
+    desc: 'Gain skills and experience. Launch your career.',
+    label: 'View Course Details',
+    href: '/cyber',
+    external: false,
+  },
+  {
+    title: 'IT TRAINING',
+    desc: 'Learn cutting-edge technologies. Become a digital age professional.',
+    label: 'View Course Details',
+    href: 'https://coursecareers.com/joshmadakor',
+    external: true,
+  },
+  {
+    title: 'IT EXAMS',
+    desc: 'Test your skills for free. Prepare for certification success.',
+    label: 'Take Exam Now',
+    href: 'https://lognpacific.com/free-certification-practice-tests/',
+    external: true,
+  },
+  {
+    title: 'BLOG',
+    desc: 'Latest IT trends and expert insights. Deepen your knowledge.',
+    label: 'Read Articles',
+    href: '/blog/',
+    external: false,
+  },
 ];
 ---
 
 <BaseLayout
   title="Home"
-  description="Josh Madakor — helping people launch and grow careers in IT and cybersecurity."
+  description="Hands-on cybersecurity and IT training, certification practice, and career insights from LogN Pacific."
 >
-  <!-- Hero -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-    <h1 class="text-4xl md:text-6xl font-bold tracking-tight">Josh Madakor</h1>
-    <p class="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
-      Launch and grow your career in IT and cybersecurity — with training, community, and hands-on practice.
-    </p>
+  <!-- 1. 上部ヒーロー見出し（黒地・中央） -->
+  <section class="bg-page py-20 sm:py-28 text-center">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="font-heading font-bold text-white text-4xl sm:text-5xl lg:text-6xl leading-tight">
+        Take control of your future!
+      </h1>
+    </div>
   </section>
 
-  <!-- 4-card navigation -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {cards.map((card) => (
+  <!-- 2. メインヒーローバナー（画像背景＋右側にテキスト重ね・(A)オーバーレイ＋スクリム） -->
+  <section class="relative w-full overflow-hidden min-h-[420px] md:min-h-[520px] flex items-center">
+    <!-- 背景画像（Josh＋赤→暗グラデ。テキストは焼き込まず重ねる） -->
+    <Image
+      src={heroJosh}
+      alt=""
+      aria-hidden="true"
+      class="absolute inset-0 w-full h-full object-cover object-left"
+      loading="eager"
+    />
+    <!-- スクリム: 右(テキスト側)を暗くして白文字の可読性を確保。左のJoshは残す。
+         object-left のため狭幅では右が暗部にならないので、モバイルはスクリムを強める。 -->
+    <div class="absolute inset-0 bg-gradient-to-r from-black/25 via-black/25 to-black/75 md:from-black/10 md:via-transparent md:to-black/55"></div>
+
+    <!-- テキストブロック（右寄せ） -->
+    <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end">
+      <div class="max-w-md text-right py-12">
+        <h2 class="font-heading font-bold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">
+          THE CYBER RANGE
+        </h2>
+        <p class="mt-3 text-white/90 text-base sm:text-lg">
+          The Best Hands-On Cyber Security Training
+        </p>
         <a
-          href={card.href}
-          target={card.external ? '_blank' : undefined}
-          rel={card.external ? 'noopener noreferrer' : undefined}
-          class="block p-6 rounded-xl border border-gray-800 bg-gray-800/40 hover:border-gray-600 hover:bg-gray-800 transition"
+          href="/cyber"
+          class="inline-block mt-6 rounded-full border-2 border-white px-7 py-2.5 text-white text-sm tracking-wide hover:bg-white hover:text-black transition"
         >
-          <h2 class="text-xl font-semibold text-white">{card.title}</h2>
-          <p class="mt-2 text-gray-400 text-sm">{card.desc}</p>
+          LEARN MORE
         </a>
-      ))}
+      </div>
     </div>
   </section>
 
-  <!-- Contact -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-    <h2 class="text-3xl font-bold text-center mb-8">Get in touch</h2>
-    <div class="bg-gray-800/40 border border-gray-800 rounded-xl p-6 md:p-10">
-      <ContactForm client:load />
+  <!-- 3. 4カードナビ -->
+  <section class="bg-page py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {cards.map((card) => (
+          <div class="flex flex-col items-center text-center rounded-xl border border-white/10 bg-white/[0.03] p-8">
+            <h3 class="font-heading font-bold text-brand text-xl tracking-wide">{card.title}</h3>
+            <p class="mt-3 text-gray-300 text-sm flex-grow">{card.desc}</p>
+            <a
+              href={card.href}
+              target={card.external ? '_blank' : undefined}
+              rel={card.external ? 'noopener noreferrer' : undefined}
+              class="inline-block mt-6 rounded-full bg-gradient-to-r from-btn-start to-btn-end p-[2px] transition hover:brightness-110"
+            >
+              <span class="block rounded-full bg-page px-5 py-2 text-sm text-white">
+                {card.label}
+              </span>
+            </a>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
+
+  <!-- 4. CONTACT US（SNSリンクのみ・フォーム無し / フラグ#5） -->
+  <section class="bg-page pb-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="font-heading font-bold text-white text-3xl mb-8">CONTACT US</h2>
+      <div class="flex justify-center gap-6">
+        <a href="https://www.linkedin.com/in/joshmadakor/" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition" aria-label="LinkedIn">
+          <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+            <circle cx="4" cy="4" r="2" />
+          </svg>
+        </a>
+        <a href="https://www.youtube.com/@JoshMadakor" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition" aria-label="YouTube">
+          <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.54c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z" />
+            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#000" />
+          </svg>
+        </a>
+        <a href="https://x.com/joshmadakor" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition" aria-label="X (Twitter)">
+          <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 1200 1227" xmlns="http://www.w3.org/2000/svg">
+            <path d="m714.163 519.284 446.727-519.284h-105.86l-387.893 450.887-309.809-450.887h-357.328l468.492 681.821-468.492 544.549h105.866l409.625-476.152 327.181 476.152h357.328l-485.863-707.086zm-144.998 168.544-47.468-67.894-377.686-540.2396h162.604l304.797 435.9906 47.468 67.894 396.2 566.721h-162.604l-323.311-462.446z" />
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/joshmadakor/" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition" aria-label="Instagram">
+          <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2" />
+            <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37Z" fill="none" stroke="currentColor" stroke-width="2" />
+            <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. back-to-top -->
+  <button
+    id="back-to-top"
+    type="button"
+    aria-label="Back to top"
+    class="fixed bottom-6 right-6 z-40 hidden rounded-full bg-white/10 hover:bg-white/20 backdrop-blur p-3 text-white transition"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+    </svg>
+  </button>
+
+  <script>
+    const btn = document.getElementById('back-to-top');
+    function toggleBtn() {
+      if (window.scrollY > 400) {
+        btn?.classList.remove('hidden');
+      } else {
+        btn?.classList.add('hidden');
+      }
+    }
+    btn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    window.addEventListener('scroll', toggleBtn, { passive: true });
+    toggleBtn();
+  </script>
 </BaseLayout>
