@@ -1,52 +1,96 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// SCAFFOLD STUB — フェーズ4で /cyber 長尺LP（F2）を忠実に再現する。
-// 統計は手動コピーの固定値（SolutionDesign Q6）。
+// /cyber 長尺LP（DesignSpec §5）。上から順にセクション実装中。
+// 実装済み: C1（ヒーロー / 統計 / Welcome+ツール）
+// 未実装: C2 Concerns+Roadmap / C3 Testimonials / C4 Community+Josh / C5 Pricing+FAQ
+
+const JOIN_URL = 'https://www.skool.com/cyber-range/about';
+
+// 統計（確定値・DesignSpec §1 / Q6）。Real Testimonials は実績ギャラリー(#real-wins)へアンカー。
 const stats = [
-  { value: '200+', label: 'Real Testimonials' },
+  { value: '200+', label: 'Real Testimonials', href: '#real-wins' },
   { value: '3,500+', label: 'Total Paid Students' },
   { value: '8,800+', label: 'Community Members' },
 ];
 
-const JOIN_URL = 'https://www.skool.com/cyber-range/about';
+// ツール（テキスト表記・ロゴなし）
+const tools = [
+  { name: 'Tenable', note: 'Vulnerability Management' },
+  { name: 'Microsoft Sentinel', note: 'SIEM' },
+  { name: 'Microsoft Defender for Endpoint', note: 'EDR' },
+  { name: 'Microsoft Azure', note: 'For Your VMs' },
+];
 ---
 
 <BaseLayout
   title="Cyber"
-  description="Hands-on cybersecurity training, labs, and community to launch your security career."
+  description="Live-Fire Cyber Range with a hands-on cyber course for each security operations topic. Real labs, real tools, real internships."
 >
-  <!-- Hero -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-    <h1 class="text-4xl md:text-6xl font-bold tracking-tight">Break Into Cybersecurity</h1>
-    <p class="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
-      Practice real scenarios, build job-ready skills, and join a community that has your back.
-    </p>
-    <a
-      href={JOIN_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="inline-block mt-8 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
-    >
-      Join the Cyber Range
-    </a>
-  </section>
+  <!-- ① ヒーロー -->
+  <section class="bg-page py-20 sm:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="font-heading font-bold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">
+        🎯 Welcome to the Cyber Range
+      </h1>
+      <p class="mt-5 text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto">
+        Live-Fire Cyber Range with a Hands-On Cyber Course for Each Security Operations Topic!
+      </p>
 
-  <!-- Stats (fixed values, SolutionDesign Q6) -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-      {stats.map((s) => (
-        <div class="p-8 rounded-xl border border-gray-800 bg-gray-800/40">
-          <p class="text-4xl font-bold text-white">{s.value}</p>
-          <p class="mt-2 text-gray-400">{s.label}</p>
-        </div>
-      ))}
+      {/* TODO(C1): ヒーロー紹介動画のサムネ＋リンク（Yu提供待ち）。
+          画像 src/assets/images/cyber/hero-video-poster.webp + 動画URL を受領後に差し込む。 */}
+
+      <a
+        href={JOIN_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-block mt-8 rounded-full bg-gradient-to-r from-btn-start to-btn-end px-8 py-3 text-white text-sm font-semibold tracking-wide transition hover:brightness-110"
+      >
+        Get Started Now
+      </a>
     </div>
   </section>
 
-  <!-- TODO(Phase4): テスティモニアル / FAQ セクションを実装（F2） -->
-  <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-    <h2 class="text-3xl font-bold mb-4">Testimonials &amp; FAQ</h2>
-    <p class="text-gray-400">Coming in Phase 4 — testimonials and frequently asked questions.</p>
+  <!-- ② 統計3カウンタ -->
+  <section class="bg-page pb-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+        {stats.map((s) => {
+          const inner = (
+            <>
+              <p class="font-heading font-bold text-brand text-4xl sm:text-5xl">{s.value}</p>
+              <p class="mt-2 text-gray-200">{s.label}</p>
+            </>
+          );
+          return (
+            <div class="rounded-xl border border-white/10 bg-white/[0.03] p-8">
+              {s.href ? <a href={s.href} class="block hover:opacity-90 transition">{inner}</a> : inner}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ Welcome / Cyber Internships + ツール -->
+  <section class="bg-page pb-24">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl leading-tight">
+        Welcome to The Cyber Range! <span class="text-brand">(Cyber Internships Available)</span>
+      </h2>
+      <p class="mt-5 text-gray-200 max-w-3xl mx-auto leading-relaxed">
+        As a community member, you'll have access to a LIVE production SOC (Security Operations Center)
+        where you will gain experience using fully licensed, enterprise-grade cybersecurity tools.
+      </p>
+
+      <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {tools.map((t) => (
+          <div class="rounded-xl border border-white/10 bg-white/[0.03] p-5 text-center">
+            <p class="font-heading font-bold text-white">{t.name}</p>
+            <p class="mt-1 text-sm text-gray-400">{t.note}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   </section>
 </BaseLayout>
