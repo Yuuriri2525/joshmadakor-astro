@@ -1,11 +1,14 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import heroVideoPoster from '../assets/images/cyber/hero-video-poster.webp';
 
 // /cyber 長尺LP（DesignSpec §5）。上から順にセクション実装中。
 // 実装済み: C1（ヒーロー / 統計 / Welcome+ツール）
 // 未実装: C2 Concerns+Roadmap / C3 Testimonials / C4 Community+Josh / C5 Pricing+FAQ
 
 const JOIN_URL = 'https://www.skool.com/cyber-range/about';
+const INTRO_VIDEO_URL = 'https://www.youtube.com/watch?v=RAEHt_sdxZo';
 
 // 統計（確定値・DesignSpec §1 / Q6）。Real Testimonials は実績ギャラリー(#real-wins)へアンカー。
 const stats = [
@@ -37,8 +40,29 @@ const tools = [
         Live-Fire Cyber Range with a Hands-On Cyber Course for Each Security Operations Topic!
       </p>
 
-      {/* TODO(C1): ヒーロー紹介動画のサムネ＋リンク（Yu提供待ち）。
-          画像 src/assets/images/cyber/hero-video-poster.webp + 動画URL を受領後に差し込む。 */}
+      {/* 紹介動画: サムネ＋再生ボタン → YouTube（新規タブ）。iframe 不使用で軽量。 */}
+      <a
+        href={INTRO_VIDEO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Watch the Cyber Range intro video on YouTube"
+        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden border border-white/10"
+      >
+        <Image
+          src={heroVideoPoster}
+          alt="Cyber Range intro video"
+          widths={[480, 768, 1280]}
+          sizes="(max-width: 768px) 100vw, 672px"
+          class="w-full h-auto block"
+        />
+        <span class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition">
+          <span class="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 group-hover:bg-white shadow-lg transition">
+            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-black ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        </span>
+      </a>
 
       <a
         href={JOIN_URL}
