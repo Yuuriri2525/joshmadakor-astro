@@ -24,6 +24,25 @@ const tools = [
   { name: 'Microsoft Defender for Endpoint', note: 'EDR' },
   { name: 'Microsoft Azure', note: 'For Your VMs' },
 ];
+
+// ⑤ Your Roadmap to Reality（3ステップ）
+const roadmap = [
+  {
+    num: '01',
+    title: 'Build Your Foundation',
+    desc: 'Master the core skills with our courses in General Theory, Vulnerability Management, and Security Operations. You’ll gain the essential knowledge every cybersecurity professional needs.',
+  },
+  {
+    num: '02',
+    title: 'Gain Real-World Experience',
+    desc: 'This is where theory becomes reality. Apply your skills in our live Cyber Range, respond to real attacks, and complete internship tasks that you can put directly on your resume.',
+  },
+  {
+    num: '03',
+    title: 'Launch Your Career',
+    desc: 'With proven experience and a supportive community behind you, you’ll apply to jobs with confidence. We’ll guide you through the job hunt, from application to your first day at work.',
+  },
+];
 ---
 
 <BaseLayout
@@ -112,6 +131,88 @@ const tools = [
           <div class="rounded-xl border border-white/10 bg-white/[0.03] p-5 text-center">
             <p class="font-heading font-bold text-white">{t.name}</p>
             <p class="mt-1 text-sm text-gray-400">{t.note}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ Do you have these concerns?（強調Q&A 3件） -->
+  <section class="bg-page py-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center mb-10">
+        Do you have these concerns?
+      </h2>
+
+      <div class="space-y-6">
+        <!-- Q1 -->
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+          <h3 class="font-heading font-bold text-brand text-lg sm:text-xl">
+            Can I get the cybersecurity job with zero experience?
+          </h3>
+          <p class="mt-3 text-gray-200 leading-relaxed">
+            Yes — it's possible. <strong class="text-white">58% of Cyber Range graduates</strong> land
+            cybersecurity roles directly. The other 42% start in tech roles that lead into security. You
+            get hands-on labs that simulate real job tasks, plus resume and interview prep. We support you
+            from skill-building all the way to job hunting. It takes effort. But this is the shortest path.
+          </p>
+          <a href="#real-wins" class="inline-block mt-4 text-accent hover:underline text-sm font-semibold">
+            👉 See real success stories
+          </a>
+        </div>
+
+        <!-- Q2 -->
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+          <h3 class="font-heading font-bold text-brand text-lg sm:text-xl">
+            Does this program provide a clear roadmap from zero to getting hired?
+          </h3>
+          <p class="mt-3 text-gray-200 leading-relaxed">
+            Yes. Cyber Range comes with a clear, structured roadmap you can follow step by step. You'll
+            know exactly <strong class="text-white">what to learn, in what order, and why</strong> — from
+            repeating labs the right way, to building a resume and portfolio that actually reflects
+            real-world skills. Instead of guessing what to study next, you'll move forward with confidence,
+            knowing each step is preparing you for interviews and real job requirements.
+          </p>
+          <a href="#real-wins" class="inline-block mt-4 text-accent hover:underline text-sm font-semibold">
+            👉 See real success stories
+          </a>
+        </div>
+
+        <!-- Q3 -->
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+          <h3 class="font-heading font-bold text-brand text-lg sm:text-xl">
+            Is this truly worth it for my future?
+          </h3>
+          <p class="mt-3 text-gray-200 leading-relaxed">
+            Cybersecurity isn't a short-term trend — it's a field that keeps growing and evolving. Even
+            with AI and automation advancing, companies still need skilled humans to investigate threats,
+            respond to incidents, and protect systems. Cyber Range helps you invest your time and energy in
+            <strong class="text-white">practical, future-proof skills</strong>. If you're willing to
+            consistently show up, practice, and learn, this program can change you from “interested in
+            cybersecurity” to someone who actually has
+            <strong class="text-white">hands-on experience and job-ready confidence</strong>.
+          </p>
+          <a href="#real-wins" class="inline-block mt-4 text-accent hover:underline text-sm font-semibold">
+            → See real success stories
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ Your Roadmap to Reality（3ステップ） -->
+  <section class="bg-page py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center mb-12">
+        Your Roadmap to Reality
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {roadmap.map((step) => (
+          <div class="rounded-xl border border-white/10 bg-white/[0.03] p-8">
+            <p class="font-heading font-bold text-accent text-4xl">{step.num}</p>
+            <h3 class="font-heading font-bold text-white text-xl mt-3">{step.title}</h3>
+            <p class="mt-3 text-gray-300 leading-relaxed text-sm">{step.desc}</p>
           </div>
         ))}
       </div>
