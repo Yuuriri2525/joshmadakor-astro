@@ -1,7 +1,11 @@
 ---
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import heroJosh from '../assets/images/hero-josh.png';
+import heroJosh from '../assets/images/hero-josh.webp';
+
+// ヒーローバナーのコピー（モバイル縦積み / PCオーバーレイで共有）
+const heroTitle = 'THE CYBER RANGE';
+const heroSub = 'The Best Hands-On Cyber Security Training';
 
 // 4カードナビ（現行ライブと同一の順番・コピー・リンク / DesignSpec §4.3）
 const cards = [
@@ -49,29 +53,49 @@ const cards = [
     </div>
   </section>
 
-  <!-- 2. メインヒーローバナー（画像背景＋右側にテキスト重ね・(A)オーバーレイ＋スクリム） -->
-  <section class="relative w-full overflow-hidden min-h-[420px] md:min-h-[520px] flex items-center">
-    <!-- 背景画像（Josh＋赤→暗グラデ。テキストは焼き込まず重ねる） -->
+  <!-- 2. メインヒーローバナー -->
+  <!-- モバイル(<md): (B)縦積み = 画像（Josh全体が見える）→ 黒地に白文字テキスト -->
+  <section class="md:hidden bg-page">
+    <Image
+      src={heroJosh}
+      alt="Josh Madakor — The Cyber Range"
+      widths={[480, 768]}
+      sizes="100vw"
+      quality={85}
+      class="w-full h-auto block"
+      loading="eager"
+    />
+    <div class="px-4 py-10 text-center">
+      <h2 class="font-heading font-bold text-white text-3xl leading-tight">{heroTitle}</h2>
+      <p class="mt-3 text-white/90 text-base">{heroSub}</p>
+      <a
+        href="/cyber"
+        class="inline-block mt-6 rounded-full border-2 border-white px-7 py-2.5 text-white text-sm tracking-wide hover:bg-white hover:text-black transition"
+      >
+        LEARN MORE
+      </a>
+    </div>
+  </section>
+
+  <!-- PC(md+): (A)オーバーレイ = 画像をフルブリード背景にして右側にテキストを重ねる -->
+  <section class="hidden md:flex relative w-full overflow-hidden min-h-[520px] items-center">
     <Image
       src={heroJosh}
       alt=""
       aria-hidden="true"
+      widths={[1024, 1440, 1920, 2560]}
+      sizes="100vw"
+      quality={85}
       class="absolute inset-0 w-full h-full object-cover object-left"
       loading="eager"
     />
-    <!-- スクリム: 右(テキスト側)を暗くして白文字の可読性を確保。左のJoshは残す。
-         object-left のため狭幅では右が暗部にならないので、モバイルはスクリムを強める。 -->
-    <div class="absolute inset-0 bg-gradient-to-r from-black/25 via-black/25 to-black/75 md:from-black/10 md:via-transparent md:to-black/55"></div>
+    <!-- スクリム: 右(テキスト側)を暗くして白文字の可読性を確保。左のJoshは残す。 -->
+    <div class="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/55"></div>
 
-    <!-- テキストブロック（右寄せ）。ml-auto を使う（ブロックは親幅を超えないので狭幅で見切れない） -->
-    <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative w-full max-w-7xl mx-auto px-6 lg:px-8">
       <div class="max-w-md ml-auto text-right py-12">
-        <h2 class="font-heading font-bold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">
-          THE CYBER RANGE
-        </h2>
-        <p class="mt-3 text-white/90 text-base sm:text-lg">
-          The Best Hands-On Cyber Security Training
-        </p>
+        <h2 class="font-heading font-bold text-white text-4xl lg:text-5xl leading-tight">{heroTitle}</h2>
+        <p class="mt-3 text-white/90 text-lg">{heroSub}</p>
         <a
           href="/cyber"
           class="inline-block mt-6 rounded-full border-2 border-white px-7 py-2.5 text-white text-sm tracking-wide hover:bg-white hover:text-black transition"
