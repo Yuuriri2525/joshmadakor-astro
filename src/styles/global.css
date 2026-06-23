@@ -32,4 +32,13 @@
     color: #ffffff;
     font-family: var(--font-sans);
   }
+
+  /*
+   * モバイルのオフキャンバスメニュー（MobileMenu の閉状態 = translate-x-full）が
+   * 画面右外に置かれ、横スクロール（document.scrollWidth がビューポート超過）を生む。
+   * clip はスクロールコンテナを作らないため sticky ヘッダーを壊さずに横はみ出しを抑える。
+   */
+  html {
+    overflow-x: clip;
+  }
 }
