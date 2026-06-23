@@ -1,7 +1,33 @@
 ---
 import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import heroVideoPoster from '../assets/images/cyber/hero-video-poster.webp';
+
+// ⑥/⑦ テスティモニアル画像。
+// NOTE: 現状は (A)方式 = PC(md+)で success-01〜06、モバイル(<md)で win-01〜31 を出し分け（現行忠実再現）。
+// 同じ就職報告メッセージの表示違いのため、両方を DOM に置くと最大37枚読み込む。
+// TODO(将来): (B) 1カルーセルに統一して軽量化する（レスポンシブで1セットのみ読み込む形へ）。
+const glob = (g: Record<string, unknown>) =>
+  Object.entries(g)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, m]) => (m as { default: ImageMetadata }).default);
+
+const successPc = glob(import.meta.glob('../assets/images/cyber/testimonial/pc/*.webp', { eager: true }));
+const winsMobile = glob(import.meta.glob('../assets/images/cyber/testimonial/mobile/*.webp', { eager: true }));
+
+// ⑥ 職種カード（成功者インタビューのサムネ）。video は次メッセージで受領→差し込み。
+const roleFiles = import.meta.glob('../assets/images/cyber/job-role/*.webp', { eager: true });
+const roleImg = (stem: string) =>
+  (Object.entries(roleFiles).find(([p]) => p.endsWith(`${stem}.webp`))![1] as { default: ImageMetadata }).default;
+const roles: { label: string; img: ImageMetadata; video: string | null }[] = [
+  { label: 'SOC Analyst', img: roleImg('role-soc-analyst'), video: null },
+  { label: 'Cyber Defense Analyst', img: roleImg('role-cyber-defense-analyst'), video: null },
+  { label: 'IT Technician', img: roleImg('role-it-technician'), video: null },
+  { label: 'Risk Management Specialist', img: roleImg('role-risk-management-specialist'), video: null },
+  { label: 'Remote Cybersecurity Role', img: roleImg('role-remote-cybersecurity'), video: null },
+  { label: 'Cybersecurity Assurance Analyst (DoD)', img: roleImg('role-cybersecurity-assurance-analyst-dod'), video: null },
+];
 
 // /cyber 長尺LP（DesignSpec §5）。上から順にセクション実装中。
 // 実装済み: C1（ヒーロー / 統計 / Welcome+ツール）
@@ -216,6 +242,94 @@ const roadmap = [
           </div>
         ))}
       </div>
+    </div>
+  </section>
+
+  <!-- ⑥ Success Stories & Graduate Voices（職種インタビューのサムネ6枚） -->
+  <section class="bg-page py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center mb-12">
+        Success Stories &amp; Graduate Voices
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {roles.map((role) => {
+          const thumb = (
+            <span class="group relative block rounded-xl overflow-hidden border border-white/10">
+              <Image
+                src={role.img}
+                alt={`${role.label} — graduate interview`}
+                widths={[400, 640]}
+                sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
+                loading="lazy"
+                class="w-full h-auto block"
+              />
+              <span class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition">
+                <span class="flex items-center justify-center w-14 h-14 rounded-full bg-white/90 group-hover:bg-white shadow-lg transition">
+                  <svg class="w-6 h-6 text-black ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </span>
+              </span>
+            </span>
+          );
+          return (
+            <div>
+              {role.video ? (
+                <a href={role.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${role.label} interview on YouTube`}>
+                  {thumb}
+                </a>
+              ) : (
+                thumb
+              )}
+              <p class="mt-3 text-center font-heading font-semibold text-white">{role.label}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑦ Real Wins from the Community（報告カルーセル / id=real-wins = C2のアンカー先） -->
+  <section id="real-wins" class="bg-page py-20 scroll-mt-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center">
+        Real Wins from the Community
+      </h2>
+      <p class="mt-3 text-center text-gray-300">This isn't just a dream. It's a reality.</p>
+    </div>
+
+    {/* (A)方式: PC は success-01〜06、モバイルは win-01〜31 を出し分け。両方 CSS scroll-snap 横カルーセル。 */}
+    <!-- PC（md+） -->
+    <div class="hidden md:flex mt-12 gap-6 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 lg:px-8 pb-4">
+      {successPc.map((img, idx) => (
+        <div class="snap-center shrink-0 w-[60%] lg:w-[32%]">
+          <Image
+            src={img}
+            alt={`Graduate success story ${idx + 1}`}
+            widths={[480, 720]}
+            sizes="(min-width: 1024px) 32vw, 60vw"
+            loading="lazy"
+            class="w-full h-auto rounded-xl border border-white/10"
+          />
+        </div>
+      ))}
+    </div>
+
+    <!-- モバイル（<md） -->
+    <div class="flex md:hidden mt-10 gap-4 overflow-x-auto snap-x snap-mandatory px-4 pb-4">
+      {winsMobile.map((img, idx) => (
+        <div class="snap-center shrink-0 w-[78%]">
+          <Image
+            src={img}
+            alt={`Community win ${idx + 1}`}
+            widths={[320, 480]}
+            sizes="78vw"
+            loading="lazy"
+            class="w-full h-auto rounded-xl border border-white/10"
+          />
+        </div>
+      ))}
     </div>
   </section>
 </BaseLayout>
