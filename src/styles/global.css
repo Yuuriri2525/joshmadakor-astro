@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* ブログ本文の整形（DesignSpec §6.3）。Tailwind 4 はCSSの @plugin で読み込む。
+ * 記事側で `prose prose-invert` ＋ prose-* ユーティリティを使ってダークテーマに合わせる。 */
+@plugin "@tailwindcss/typography";
+
 /*
  * デザイントークン（DesignSpec §2）。値は現行ライブ joshmadakor.tech の
  * Elementor CSS から採取した実値（2026-06-18 採取）。スクショ由来の近似値は不採用。
