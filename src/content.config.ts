@@ -20,6 +20,16 @@ const blog = defineCollection({
       heroImage: image().optional(),
       tags: z.array(z.string()).default([]),
       draft: z.boolean().default(false),
+
+      // --- フェーズ4-4（ブログテンプレート）で追加 ---
+      // カードのカテゴリバッジ用の単一カテゴリ（例: Cybersecurity / Career）。tags は併存。
+      category: z.string().default('Uncategorized'),
+      // 記事冒頭の埋め込み動画（YouTube URL）。無ければ heroImage を使用。
+      youtube: z.string().url().optional(),
+      // 任意のカード抜粋。未指定なら description を使う。
+      excerpt: z.string().optional(),
+      // 「Top 5 Reads」のおすすめ記事ID（最大5件・手動指定）。未指定なら新着5件にフォールバック。
+      topReads: z.array(z.number()).max(5).default([]),
     }),
 });
 
