@@ -73,6 +73,127 @@ const roadmap = [
     desc: 'With proven experience and a supportive community behind you, you’ll apply to jobs with confidence. We’ll guide you through the job hunt, from application to your first day at work.',
   },
 ];
+
+// ⑩ Pricing「Ready to Start Your New Career?」（DesignSpec §5 / Q: 料金ハードコード）。
+// NOTE: 月額はライブ pricing ウィジェット表示が $129 だが、FAQ 本文・指示値は $128 で不一致。
+//       内部整合（FAQ Q2 と一致）を優先し $128 を採用。年額 $1,238（定価 $1,548 / 20% off）。
+const pricing = [
+  {
+    name: 'Monthly Plan',
+    price: '$128',
+    unit: '/ mo',
+    was: null as string | null,
+    tagline: 'For those who want to start flexibly. Cancel anytime.',
+    cta: 'Start with Monthly',
+    highlight: false,
+    badge: null as string | null,
+  },
+  {
+    name: 'Annual Plan',
+    price: '$1,238',
+    unit: '/ yr',
+    was: '$1,548',
+    tagline: 'For those serious about changing their career. Maximum value.',
+    cta: 'Start with Annual',
+    highlight: true,
+    badge: '20% savings!',
+  },
+];
+
+// プラン共通の「What you get」（ライブ /cyber の "What you get" コピーを移植 = FAQ Q1 由来）。
+// ライブの pricing ウィジェット自体には特典の箇条書きが無いため、ここに共通リストとして配置。
+const includes = [
+  'Real cybersecurity labs (200+ hours)',
+  'Live practice environment where you defend against actual attacks (in a safe, legal setting)',
+  'Multiple courses: Security Operations, Vulnerability Management, Threat Hunting',
+  'Job prep: Resume building, portfolio creation, interview practice',
+  'Access to enterprise-level security tools',
+  'Community support (Skool + Discord)',
+  'Optional internship',
+];
+
+// ⑪ FAQ（ライブ /cyber の JSON-LD FAQPage から正確移植 / 全11件）。
+// blocks: 段落(p) と 箇条書き(ul) を保持。アコーディオンは <details>/<summary> でゼロJS。
+const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; items: string[] })[] }[] = [
+  {
+    q: 'Is this a course or a bootcamp? Or what is it?',
+    blocks: [
+      { type: 'p', text: 'It’s neither a traditional course nor a bootcamp. Think of it as a virtual security lab + job-ready training.' },
+      { type: 'p', text: 'What you get:' },
+      { type: 'ul', items: ['Real cybersecurity labs (200+ hours)', 'Live practice environment where you defend against actual attacks (in a safe, legal setting)', 'Multiple courses: Security Operations, Vulnerability Management, Threat Hunting', 'Job prep: Resume building, portfolio creation, interview practice', 'Access to enterprise-level security tools', 'Community support (Skool + Discord)', 'Optional internship'] },
+      { type: 'p', text: 'Format:' },
+      { type: 'p', text: 'Monthly subscription. Train at your own pace. Cancel anytime. Keep Discord access forever.' },
+      { type: 'p', text: 'Bottom line:' },
+      { type: 'p', text: 'You’re not just sitting through lectures — you’re building skills you can prove to employers.' },
+    ],
+  },
+  {
+    q: 'How much does this community cost?',
+    blocks: [
+      { type: 'p', text: 'There are two subscription plans available: a monthly plan at $128 and an annual plan at $1,238. The annual plan offers a 20% discount compared to the monthly rate. If you initially subscribe to the monthly plan, you can later switch to the annual plan. In that case, you will automatically be refunded for one month (this is a feature of the Skool platform).' },
+    ],
+  },
+  {
+    q: 'What am I paying for? Isn\'t all information free?',
+    blocks: [
+      { type: 'p', text: 'All information is free, and it’s important to acknowledge that. However, when you join, here’s what you’re actually paying for:' },
+      { type: 'ul', items: ['Access to a Cyber Range Environment that simulates a real work network, shared with other active users. The activity of these participants generates network traffic and logs that you can analyze.', 'Access to enterprise-grade, licensed security tools, including Tenable Vulnerability Management, Microsoft Azure Compute, Microsoft Defender for Endpoint, and an EDR solution.', 'Membership in a professional cybersecurity community with over 1,000 members.', 'Access to a range of individual courses (cybersecurity theory, vulnerability management, security operations, threat hunting, and more) that I have carefully organized and built over time.', 'The rights to list my company on your resume for experience if you choose to participate in the internship program.'] },
+    ],
+  },
+  {
+    q: 'Can I really get a job with this?',
+    blocks: [
+      { type: 'p', text: 'Yes, you can. This community is specifically designed to address the main challenges people face when trying to secure a job, such as gaining hands-on experience in a real-world environment and acquiring verifiable experience that can be added to your resume under a company name. This community builds upon a previous course and internship program that has already helped several individuals land jobs.' },
+      { type: 'p', text: 'You can see a list of past interns who have moved on to IT and cybersecurity-related positions here. Every person on this list had Log(N) Pacific (my company) listed as prior experience before securing employment: https://lognpacific.com/past-interns-who-have-gotten-jobs/' },
+    ],
+  },
+  {
+    q: 'What technology will I be working with?',
+    blocks: [
+      { type: 'p', text: 'You will be working with the following:' },
+      { type: 'ul', items: ['Cloud Platforms: Microsoft Azure, where you will manage virtual machines, network configurations, and cloud-based resources.', 'Vulnerability Management: Access to enterprise-level tools such as Tenable – Vulnerability Management for scanning, assessing, and managing vulnerabilities in both Windows and Linux environments.', 'Endpoint Detection and Response (EDR): Microsoft Defender for Endpoint, which you will use for onboarding, isolating, and investigating virtual machines, as well as detecting remote code execution.', 'SIEM and Logging Tools: Microsoft Sentinel for creating and visualizing SIEM dashboards, monitoring network activity, and managing logs to identify potential security incidents.', 'Threat Hunting and Security Operations: You’ll engage in threat hunting using scenarios that mimic real-world challenges, such as identifying network slowdowns, detecting data exfiltration, and responding to zero-day threats.', 'Compliance and Auditing: Tools and processes for running compliance audits (e.g., CIS and DISA STIG) and applying security guidelines using PowerShell scripts.', 'Programming and Automation: GitHub for building your portfolio and working on vulnerability management and security operations projects, showcasing your hands-on skills.', 'Monitoring and Forensics: Utilizing Azure Activity Logs, NSG logs, and KQL (Kusto Query Language) to analyze audit logs, network security group logs, and – Microsoft Defender for Endpoint logs.', 'Resume and Career Preparation: Support in building a professional portfolio and resume, along with practical interviewing skills and job search techniques.', 'Internship Component: Optional activities to gain direct, real-world experience under the company’s name, which can be listed on your resume.'] },
+      { type: 'p', text: 'This blend of technologies ensures you build a robust set of skills in cybersecurity, including proactive threat response, vulnerability management, and security operations.' },
+    ],
+  },
+  {
+    q: 'Is the internship experienced recognized?',
+    blocks: [
+      { type: 'p', text: 'Yes, the experience is recognized. On average, I provide about one reference per week for companies looking to hire interns. You can view a list of past interns who have successfully transitioned into IT and cybersecurity roles here. Every individual on this list included Log(N) Pacific (my company) as prior experience before securing their positions: [https://lognpacific.com/past-interns-who-have-gotten-jobs/]' },
+    ],
+  },
+  {
+    q: 'Why are you charging for an internship?',
+    blocks: [
+      { type: 'p', text: 'I’m not—the internship is simply an optional component within the community. It initially developed as a response to the high volume of questions and engagement from students. Since then, I’ve enhanced the internship experience by incorporating additional ways for members to contribute and gain experience.' },
+    ],
+  },
+  {
+    q: 'What will I be doing during the internship?',
+    blocks: [
+      { type: 'p', text: 'During the internship, you’ll have the option to engage in various activities, including:' },
+      { type: 'ul', items: ['Designing, testing, and publishing Threat Hunting Scenarios for use by other community members.', 'Creating, testing, and publishing Vulnerability Remediations and STIG (Security Technical Implementation Guide) Implementations, which are standardized configurations used to enhance the security of systems.', 'Providing general support within the Skool Cyber Range Community.', 'Offering assistance in the Cyber Range Alumni Discord.'] },
+      { type: 'p', text: 'Your role and title will evolve based on your level of contribution, ranging from Cybersecurity Support Technician to Engineering.' },
+    ],
+  },
+  {
+    q: 'Can someone completely new do well in the community?',
+    blocks: [
+      { type: 'p', text: 'Yes, absolutely. There is an entire section dedicated to providing resources and advice to help you build a strong foundation in cybersecurity. While the learning curve for someone completely new can be steep, it’s definitely manageable. Additionally, if you’re just starting out in the field, it’s highly encouraged to apply for both general IT positions and cybersecurity roles to increase your experience and opportunities.' },
+    ],
+  },
+  {
+    q: 'What if I bought your previous course? Can I get a discount?',
+    blocks: [
+      { type: 'p', text: 'All original course members were notified via email at the launch of the program and given the opportunity to join at a discounted rate. Once you join at this price, your rate will be locked in. Additionally, all original course members were granted access to the Cyber Range Alumni Discord, regardless of whether they choose to join the new community.' },
+    ],
+  },
+  {
+    q: 'How is the new Cyber Range Community different from the previous Course?',
+    blocks: [
+      { type: 'p', text: 'The new Cyber Range is a hands-on, community-driven environment built for real-world IT and cybersecurity training. Unlike the old self-paced video course, this upgraded platform lets students work together in the same network using real enterprise tools like Tenable for vulnerability management and Microsoft Defender for Endpoint for threat hunting on Azure. It offers guided labs, mentorship, resume and career support, plus internship tasks in vulnerability management and threat hunting that you can complete on your own to earn credit. With structure, accountability, and access to industry tools, the Cyber Range Community is designed to give you practical skills, confidence, and the support you need to get hired.' },
+    ],
+  },
+];
 ---
 
 <BaseLayout
@@ -417,6 +538,106 @@ const roadmap = [
             educational content.
           </p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑩ Pricing「Ready to Start Your New Career?」 -->
+  <section class="bg-page py-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center">
+        Ready to Start Your New Career?
+      </h2>
+
+      {/* プラン共通の同梱内容（ライブ "What you get" コピー） */}
+      <div class="mt-10 max-w-2xl mx-auto rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+        <p class="font-heading font-bold text-white text-center">Every plan includes</p>
+        <ul class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+          {includes.map((item) => (
+            <li class="flex items-start gap-2 text-gray-200 text-sm">
+              <span class="text-accent mt-0.5">✓</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        {pricing.map((plan) => (
+          <div
+            class:list={[
+              'relative flex flex-col rounded-2xl border p-8 text-center',
+              plan.highlight ? 'border-brand bg-brand/[0.06]' : 'border-white/10 bg-white/[0.03]',
+            ]}
+          >
+            {plan.badge && (
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-btn-start to-btn-end px-4 py-1 text-xs font-semibold text-white">
+                {plan.badge}
+              </span>
+            )}
+            <p class="font-heading font-bold text-white text-lg">{plan.name}</p>
+            <div class="mt-4 flex items-end justify-center gap-1">
+              {plan.was && <span class="text-gray-500 line-through text-lg mb-1">{plan.was}</span>}
+              <span class="font-heading font-bold text-brand text-4xl sm:text-5xl">{plan.price}</span>
+              <span class="text-gray-300 mb-1">{plan.unit}</span>
+            </div>
+            <p class="mt-4 text-gray-300 text-sm flex-grow">{plan.tagline}</p>
+            <div class="mt-6">
+              <a
+                href={JOIN_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                class:list={[
+                  'inline-block w-full rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition',
+                  plan.highlight
+                    ? 'bg-gradient-to-r from-btn-start to-btn-end text-white hover:brightness-110'
+                    : 'border border-white/30 text-white hover:bg-white hover:text-black',
+                ]}
+              >
+                {plan.cta}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑪ FAQ（<details>/<summary> でゼロJSアコーディオン / 全11件） -->
+  <section class="bg-page py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center mb-12">
+        Frequently Asked Questions
+      </h2>
+
+      <div class="space-y-4">
+        {faqs.map((item) => (
+          <details class="group rounded-xl border border-white/10 bg-white/[0.03] overflow-hidden">
+            <summary class="flex items-center justify-between gap-4 cursor-pointer list-none p-5 sm:p-6 [&::-webkit-details-marker]:hidden">
+              <span class="font-heading font-semibold text-white">{item.q}</span>
+              <svg
+                class="w-5 h-5 flex-shrink-0 text-accent transition-transform duration-200 group-open:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="px-5 sm:px-6 pb-6 -mt-1 space-y-3 text-gray-300 leading-relaxed">
+              {item.blocks.map((block) =>
+                block.type === 'p' ? (
+                  <p>{block.text}</p>
+                ) : (
+                  <ul class="list-disc pl-5 space-y-1.5">
+                    {block.items.map((li) => <li>{li}</li>)}
+                  </ul>
+                )
+              )}
+            </div>
+          </details>
+        ))}
       </div>
     </div>
   </section>
