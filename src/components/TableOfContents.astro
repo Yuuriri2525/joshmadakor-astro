@@ -1,0 +1,45 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+// 目次（DesignSpec §6.2-5）。Astro の render() が返す headings から自動生成。
+// H2 を親、H3 を子として階層化。アンカー slug は Astro が見出しに自動付与する id を使う。
+interface Props {
+  headings: MarkdownHeading[];
+}
+const { headings } = Astro.props;
+
+type Node = MarkdownHeading & { children: MarkdownHeading[] };
+const toc: Node[] = [];
+for (const h of headings) {
+  if (h.depth === 2) toc.push({ ...h, children: [] });
+  else if (h.depth === 3 && toc.length) toc[toc.length - 1].children.push(h);
+}
+---
+{toc.length > 0 && (
+  <details open class="rounded-xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+    <summary class="cursor-pointer list-none font-heading font-bold text-white [&::-webkit-details-marker]:hidden">
+      <span class="inline-flex items-center gap-2">
+        <svg class="h-5 w-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h7" />
+        </svg>
+        Table of Contents
+      </span>
+    </summary>
+    <ol class="mt-4 list-decimal space-y-2 pl-5 text-gray-300 marker:text-gray-500">
+      {toc.map((item) => (
+        <li>
+          <a href={`#${item.slug}`} class="hover:text-brand hover:underline">{item.text}</a>
+          {item.children.length > 0 && (
+            <ol class="mt-2 list-[lower-alpha] space-y-1.5 pl-5 marker:text-gray-600">
+              {item.children.map((c) => (
+                <li>
+                  <a href={`#${c.slug}`} class="hover:text-brand hover:underline">{c.text}</a>
+                </li>
+              ))}
+            </ol>
+          )}
+        </li>
+      ))}
+    </ol>
+  </details>
+)}

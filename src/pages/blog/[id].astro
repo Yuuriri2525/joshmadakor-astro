@@ -1,10 +1,12 @@
 ---
 import { getCollection, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import CyberRangeCTA from '../../components/CyberRangeCTA.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
 
-// 投稿ID形式 /blog/{id}/ を生成（旧URL維持・リダイレクト不要 / SolutionDesign §4.2, §6）。
-// draft: true の記事はビルド対象外 → sitemap にも含まれない。
+// 投稿ID形式 /blog/{id}/ を生成（旧URL維持 / DesignSpec §6.3）。draft はビルド対象外。
 export const getStaticPaths = (async () => {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
   return posts.map((post) => ({
@@ -14,31 +16,166 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { post } = Astro.props;
-const { Content } = await render(post);
-const { title, description, pubDate, updatedDate, tags } = post.data;
+const { Content, headings } = await render(post);
+const { id, title, description, pubDate, updatedDate, heroImage, youtube, category } = post.data;
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// YouTube URL から video id を抽出 → nocookie 埋め込みURLを作る（lazy iframe）。
+const youtubeId = (() => {
+  if (!youtube) return null;
+  try {
+    const u = new URL(youtube);
+    return u.searchParams.get('v') ?? u.pathname.split('/').pop() ?? null;
+  } catch {
+    return null;
+  }
+})();
+const embedUrl = youtubeId ? `https://www.youtube-nocookie.com/embed/${youtubeId}` : null;
+
+// Top 5 Reads: topReads（手動）優先 → 無ければ新着5件フォールバック（自分を除外 / §6.3）。
+const all = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const byId = new Map(all.map((p) => [p.data.id, p]));
+let related = post.data.topReads
+  .map((rid) => byId.get(rid))
+  .filter((p): p is NonNullable<typeof p> => !!p && p.data.id !== id);
+if (related.length === 0) {
+  related = all.filter((p) => p.data.id !== id).slice(0, 5);
+}
+related = related.slice(0, 5);
+
+// SNS 共有URL（リンク方式・ゼロJS）。Astro.site = https://joshmadakor.tech/
+const pageUrl = new URL(`/blog/${id}/`, Astro.site).href;
+const enc = encodeURIComponent;
+const shareLinks = [
+  { label: 'Share on X', href: `https://twitter.com/intent/tweet?url=${enc(pageUrl)}&text=${enc(title)}`, icon: 'x' },
+  { label: 'Share on LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(pageUrl)}`, icon: 'in' },
+  { label: 'Share on Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${enc(pageUrl)}`, icon: 'fb' },
+];
 ---
 
 <BaseLayout title={title} description={description ?? title}>
-  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <a href="/blog/" class="text-blue-400 hover:text-blue-300 text-sm">← Back to blog</a>
-    <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-3">{title}</h1>
-    <p class="text-gray-400 text-sm mb-2">
-      <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
-      {updatedDate && <span> · Updated {fmt(updatedDate)}</span>}
-    </p>
-    {tags.length > 0 && (
-      <ul class="flex flex-wrap gap-2 mb-8">
-        {tags.map((tag) => (
-          <li class="text-xs px-2 py-1 rounded bg-gray-800 text-gray-300">#{tag}</li>
-        ))}
-      </ul>
-    )}
-    {/* TODO(Phase4): @tailwindcss/typography を導入して .prose で本文を整形する */}
-    <div class="blog-content space-y-4 leading-relaxed text-gray-200">
-      <Content />
+  <section class="bg-page pt-16 pb-24 sm:pt-20">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:px-8">
+      <!-- 本文カラム -->
+      <article class="lg:col-span-8">
+        <!-- パンくず -->
+        <nav class="text-sm text-gray-400" aria-label="Breadcrumb">
+          <a href="/" class="hover:text-white">Home</a>
+          <span class="mx-2 text-gray-600">›</span>
+          <a href="/blog/" class="hover:text-white">IT / Cyber Security Blog</a>
+          <span class="mx-2 text-gray-600">›</span>
+          <span class="text-gray-300">{title}</span>
+        </nav>
+
+        <!-- カテゴリ＋タイトル -->
+        <p class="mt-6 text-xs font-semibold uppercase tracking-wide text-accent">{category}</p>
+        <h1 class="mt-2 font-heading text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+          {title}
+        </h1>
+        <p class="mt-4 text-sm text-gray-400">
+          <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
+          {updatedDate && <span> · Updated {fmt(updatedDate)}</span>}
+        </p>
+
+        <!-- Share the Post（リンク方式・ゼロJS） -->
+        <div class="mt-5 flex items-center gap-3">
+          <span class="text-sm font-semibold text-gray-300">Share the Post</span>
+          <div class="flex gap-2">
+            {shareLinks.map((s) => (
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                class="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-gray-300 transition hover:border-white/40 hover:text-white"
+              >
+                {s.icon === 'x' && (
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 1200 1227"><path d="m714.163 519.284 446.727-519.284h-105.86l-387.893 450.887-309.809-450.887h-357.328l468.492 681.821-468.492 544.549h105.866l409.625-476.152 327.181 476.152h357.328l-485.863-707.086zm-144.998 168.544-47.468-67.894-377.686-540.2396h162.604l304.797 435.9906 47.468 67.894 396.2 566.721h-162.604l-323.311-462.446z" /></svg>
+                )}
+                {s.icon === 'in' && (
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" /><circle cx="4" cy="4" r="2" /></svg>
+                )}
+                {s.icon === 'fb' && (
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.5 9.9v-7H8v-2.9h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6v1.9h2.8L15.7 15h-2.2v7A10 10 0 0022 12z" /></svg>
+                )}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <!-- アイキャッチ: 動画があれば nocookie 埋め込み、無ければ heroImage -->
+        {embedUrl ? (
+          <div class="mt-8 aspect-video overflow-hidden rounded-xl border border-white/10">
+            <iframe
+              class="h-full w-full"
+              src={embedUrl}
+              title={title}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+        ) : heroImage ? (
+          <Image
+            src={heroImage}
+            alt={title}
+            widths={[480, 768, 1024]}
+            sizes="(min-width: 1024px) 720px, 100vw"
+            loading="eager"
+            class="mt-8 w-full rounded-xl border border-white/10"
+          />
+        ) : null}
+
+        <!-- 目次 -->
+        <div class="mt-8">
+          <TableOfContents headings={headings} />
+        </div>
+
+        <!-- 本文（@tailwindcss/typography） -->
+        <div class="prose prose-invert mt-8 max-w-none prose-headings:scroll-mt-24 prose-headings:font-heading prose-a:text-brand prose-img:rounded-xl prose-pre:bg-black/60 prose-pre:border prose-pre:border-white/10">
+          <Content />
+        </div>
+      </article>
+
+      <!-- サイドバー -->
+      <aside class="lg:col-span-4">
+        <div class="sticky top-24 space-y-8">
+          <CyberRangeCTA />
+
+          {related.length > 0 && (
+            <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+              <h2 class="font-heading text-lg font-bold text-white">Top 5 Reads</h2>
+              <ul class="mt-4 space-y-4">
+                {related.map((r) => (
+                  <li>
+                    <a href={`/blog/${r.data.id}/`} class="group flex items-center gap-3">
+                      <span class="h-14 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
+                        {r.data.heroImage && (
+                          <Image
+                            src={r.data.heroImage}
+                            alt={r.data.title}
+                            widths={[160]}
+                            sizes="80px"
+                            loading="lazy"
+                            class="h-full w-full object-cover"
+                          />
+                        )}
+                      </span>
+                      <span class="text-sm font-medium leading-snug text-gray-200 transition group-hover:text-brand">
+                        {r.data.title}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </aside>
     </div>
-  </article>
+  </section>
 </BaseLayout>
