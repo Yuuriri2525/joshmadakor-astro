@@ -16,6 +16,7 @@ joshmadakor.tech を WordPress/Elementor（HostGator）から Astro 静的サイ
 - **ホスティング:** Cloudflare Pages（無料プラン）
 - **フレームワーク:** Astro（SSG mode）
 - **目標:** 高速・低コスト・保守容易な静的サイト。Lighthouse 全項目 90+（lognpacific.com 同等）
+- **進捗（2026-06時点）:** フェーズ **4-1〜4-4 完了** — 共通部（Header/Footer/トークン/フォント）・ホーム・`/cyber` 長尺LP・ブログ（テンプレート＋WordPress 公開61記事の移行）。**残:** 見た目の微調整パス（`/cyber` 等）と公開（Cloudflare Pages へ DNS 切替）。
 
 ---
 
@@ -25,6 +26,7 @@ joshmadakor.tech を WordPress/Elementor（HostGator）から Astro 静的サイ
 |------|---------|------|
 | フレームワーク | Astro 6（SSG） | `package.json`: `astro@^6.2.2` |
 | スタイリング | Tailwind CSS 4 | `@tailwindcss/vite` プラグイン経由（`astro.config.mjs`） |
+| ブログ本文整形 | `@tailwindcss/typography` | `global.css` の `@plugin` で読込・記事は `prose prose-invert` |
 | インタラクティブ | React 19（Islands） | `@astrojs/react`。メニュー・フォームのみ |
 | サイトマップ | `@astrojs/sitemap` | ビルド時に自動生成 |
 | 言語 | TypeScript（strict） | `tsconfig.json` で `astro/tsconfigs/strict` を継承 |
@@ -47,7 +49,11 @@ joshmadakor-astro/
 │   │   ├── Header.astro          # ヘッダー・ナビゲーション
 │   │   ├── Footer.astro          # フッター
 │   │   ├── MobileMenu.tsx        # React island（モバイルメニュー）
-│   │   └── ContactForm.tsx       # React island（Web3Forms フォーム）
+│   │   ├── ContactForm.tsx       # React island（Web3Forms フォーム）
+│   │   ├── BlogCard.astro        # ブログ一覧カード
+│   │   ├── CyberRangeCTA.astro   # ブログのサイドバー CTA バナー
+│   │   ├── TableOfContents.astro # 記事の目次（見出しから自動生成）
+│   │   └── BackToTop.astro       # ↑トップへ（home / blog 共用）
 │   ├── layouts/
 │   │   └── BaseLayout.astro      # 共通レイアウト（meta / OGP / GA4 直書き）
 │   ├── pages/                    # ファイルベースルーティング
@@ -71,7 +77,7 @@ joshmadakor-astro/
 └── CLAUDE.md                     # このファイル
 ```
 
-> 補足: `src/content/blog/` には現在サンプル記事（`sample-*.md`）が入っている。本番の 61 記事は WordPress からの変換後に配置する（`SolutionDesign.md` §6）。
+> 補足: `src/content/blog/` には WordPress から移行した**公開 61 記事**が入っている（投稿ID形式URL `/blog/{id}/` 維持・ID 2137〜6079）。テンプレ確認用のサンプル記事（`sample-*.md`）と空の下書きは削除済み。以降の記事追加・更新は Yu が `.md` を置いて push するだけ（`SolutionDesign.md` §6）。画像は `src/assets/images/blog/` に取り込み済み（アイキャッチ＋YouTubeサムネ＋本文インライン）。
 
 ---
 
@@ -80,7 +86,7 @@ joshmadakor-astro/
 ### ファイル命名規則
 - **ページ（`src/pages/`）:** kebab-case + `.astro`（例：`cyber.astro`）。動的ルートは `[param].astro`（例：`blog/[id].astro`）
 - **コンポーネント（`src/components/`）:** PascalCase
-  - Astro コンポーネント：`Header.astro`, `Footer.astro`
+  - Astro コンポーネント：`Header.astro`, `Footer.astro`, `BlogCard.astro`, `CyberRangeCTA.astro`, `TableOfContents.astro`, `BackToTop.astro`
   - React コンポーネント：`MobileMenu.tsx`, `ContactForm.tsx`
 - **ブログ記事（`src/content/blog/`）:** `.md`
 
@@ -139,13 +145,17 @@ const { title } = Astro.props;
 | `heroImage` | `image().optional()` | 任意 | `src/assets/images/blog/` の画像（Astro Image 最適化） |
 | `tags` | `z.array(z.string()).default([])` | 既定 `[]` | タグ |
 | `draft` | `z.boolean().default(false)` | 既定 `false` | `true` はビルド除外 |
+| `category` | `z.string().default('Uncategorized')` | 既定 `Uncategorized` | カードのカテゴリバッジ（単一） |
+| `youtube` | `z.string().url().optional()` | 任意 | 記事冒頭の埋め込み動画URL（無ければ `heroImage` を表示） |
+| `excerpt` | `z.string().optional()` | 任意 | カード抜粋の上書き（無ければ `description`） |
+| `topReads` | `z.array(z.number()).max(5).default([])` | 既定 `[]` | 「Top 5 Reads」のおすすめ記事ID（最大5・未指定は新着5件フォールバック） |
 
 ### URL生成（`src/pages/blog/[id].astro`）
 - `getStaticPaths` が `getCollection('blog', ({ data }) => !data.draft)` でドラフトを除外し、`params: { id: String(post.data.id) }` で `/blog/{id}/` を生成する
 - **`draft: true` の記事はビルド対象外**になり、sitemap にも含まれない
 - 記事を追加するときは frontmatter に必ず数値 `id` を持たせること。`id` が抜けるとビルドが型エラーになる
 
-> 注: ブログ本文の `.prose` 整形は未対応。`@tailwindcss/typography` はフェーズ4で導入予定（`[id].astro` に TODO コメントあり）。
+> 注: ブログ本文は `@tailwindcss/typography`（`prose prose-invert`）で整形済み。**目次**は `render()` が返す `headings`（H2/H3）から自動生成（`TableOfContents.astro`・`<details>` でゼロJS）。**一覧の Load More** は全カードを出力し初期12件表示・残りは段階表示する小スクリプト（依存なし）。**記事冒頭**は `youtube` があれば `youtube-nocookie` の lazy iframe、無ければ `heroImage`。サイドバーに Cyber Range CTA ＋ Top 5 Reads。
 
 ---
 
@@ -205,7 +215,7 @@ Lighthouse は全ページ 90+ を目標（`SolutionDesign.md` §10）。
 - **検索機能は実装しない**（`SolutionDesign.md` §9 Q4）
 - **ブランド表記:** 表示ブランドは **LOG(N) PACIFIC / "LogN Pacific"**（DesignSpec フラグ#2）。リポジトリ名・ドメイン・GA4 プロパティは joshmadakor.tech のままだが、ロゴ・サイト名・コピーライト等の**見せ方は LogN Pacific** に統一する（"Josh Madakor" のテキスト表記は使わない）
 - **ロゴ:** 背景に応じて2種を出し分ける（Astro Image）。ヘッダー（黒地）= `src/assets/images/logo-light.png`（白系「LOG(N)」＋グレー「PACIFIC」）、フッター（グレー地 `#9c9c9c`）= `src/assets/images/logo-dark.png`（黒系・3000×1130 高解像度）。指定の SVG は空ファイルのため不採用。ベクター版が必要になれば差し替え可
-- **`@tailwindcss/typography` は未導入。** ブログ本文の `.prose` 整形はフェーズ4で導入予定
+- **`@tailwindcss/typography` 導入済み。** `global.css` の `@plugin "@tailwindcss/typography";` で読み込み、記事本文は `prose prose-invert` ＋ `prose-*` ユーティリティで整形（vite は `^7` のまま・typography は Tailwind プラグインで vite を引かない）
 - IT Training は coursecareers.com への外部リンク（移行対象外）
 
 ---
