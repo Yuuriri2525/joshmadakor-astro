@@ -1,0 +1,21 @@
+---
+// ブログのサイドバー CTA バナー（一覧・記事で共用 / DesignSpec §6.1, §6.2）。
+// 黒地サイトに馴染むブランド色のカード。スティッキー指定は呼び出し側で行う。
+---
+<aside class="rounded-2xl border border-brand/30 bg-gradient-to-b from-brand/10 to-white/[0.02] p-6 text-center">
+  <p class="font-heading font-bold text-brand text-xs tracking-[0.2em] uppercase">Cyber Range</p>
+  <h3 class="mt-3 font-heading font-bold text-white text-xl leading-tight">
+    Hands-On Cybersecurity Training
+  </h3>
+  <ul class="mt-5 space-y-2 text-sm text-gray-200 text-left">
+    <li class="flex items-start gap-2"><span class="text-accent mt-0.5">✓</span><span>LIVE production SOC experience</span></li>
+    <li class="flex items-start gap-2"><span class="text-accent mt-0.5">✓</span><span>Enterprise-grade security tools</span></li>
+    <li class="flex items-start gap-2"><span class="text-accent mt-0.5">✓</span><span>Internships available</span></li>
+  </ul>
+  <a
+    href="/cyber"
+    class="mt-6 inline-block w-full rounded-full bg-gradient-to-r from-btn-start to-btn-end px-5 py-3 text-white text-sm font-semibold tracking-wide transition hover:brightness-110"
+  >
+    Explore the Cyber Range
+  </a>
+</aside>

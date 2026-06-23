@@ -1,37 +1,88 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import CyberRangeCTA from '../../components/CyberRangeCTA.astro';
 
-// 公開記事を新着順に一覧表示（SolutionDesign §6）。
-// NOTE(Phase4): 61件は1ページに収まらないため、paginate() を使った
-// /blog/[page].astro 形式のページネーションを別タスクで実装する。
+// 公開記事を新着順に一覧表示（DesignSpec §6.1）。
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
-const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+// Load More 方式（番号送りではない / §6.1）。全カードを出力し、初期 INITIAL 件のみ表示。
+// 残りは hidden にしておき、「Load More」で BATCH 件ずつ表示する（JS 最小・依存なし）。
+const INITIAL = 12;
+const BATCH = 12;
+const hasMore = posts.length > INITIAL;
 ---
 
-<BaseLayout title="Blog" description="Articles on IT, cybersecurity, and building a tech career by Josh Madakor.">
-  <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <h1 class="text-3xl md:text-4xl font-bold mb-8">Blog</h1>
-    <ul class="space-y-8">
-      {posts.map((post) => (
-        <li class="border-b border-gray-800 pb-8">
-          <p class="text-gray-400 text-sm mb-1">
-            <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
-          </p>
-          <h2 class="text-xl font-semibold">
-            <a href={`/blog/${post.data.id}/`} class="text-white hover:text-blue-400 transition">
-              {post.data.title}
-            </a>
-          </h2>
-          {post.data.description && (
-            <p class="text-gray-400 mt-2">{post.data.description}</p>
-          )}
-        </li>
-      ))}
-    </ul>
+<BaseLayout
+  title="Blog"
+  description="Cyber Security and IT career tips, success stories, and insights from YouTuber Josh Madakor."
+>
+  <!-- ヘッダー帯（パンくず＋特大見出し＋サブコピー） -->
+  <section class="bg-page pt-16 pb-12 sm:pt-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <nav class="text-sm text-gray-400" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-white">Home</a>
+        <span class="mx-2 text-gray-600">›</span>
+        <span class="text-gray-300">IT / Cyber Security Blog</span>
+      </nav>
+      <h1 class="mt-5 font-heading text-5xl font-bold tracking-tight text-white sm:text-6xl">BLOG</h1>
+      <p class="mt-4 max-w-2xl text-gray-300">
+        Cyber Security and IT career tips, success stories, and insights from YouTuber Josh Madakor.
+      </p>
+    </div>
   </section>
+
+  <!-- 本体: 記事グリッド（左）＋ サイドバー（右・PCのみ） -->
+  <section class="bg-page pb-24">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:px-8">
+      <!-- 記事グリッド -->
+      <div class="lg:col-span-8">
+        <div id="post-grid" class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {posts.map((post, i) => (
+            <div class="blog-card-item" data-card hidden={i >= INITIAL}>
+              <BlogCard post={post} />
+            </div>
+          ))}
+        </div>
+
+        {hasMore && (
+          <div class="mt-12 text-center">
+            <button
+              id="load-more"
+              type="button"
+              data-batch={BATCH}
+              class="rounded-full border border-white/30 px-8 py-3 text-sm font-semibold tracking-wide text-white transition hover:bg-white hover:text-black"
+            >
+              Load More
+            </button>
+          </div>
+        )}
+      </div>
+
+      <!-- サイドバー -->
+      <aside class="hidden lg:col-span-4 lg:block">
+        <div class="sticky top-24">
+          <CyberRangeCTA />
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- back-to-top（共有コンポーネントは T6 で導入予定。ここでは BaseLayout 側に集約） -->
+
+  <script>
+    // Load More: 隠れているカードを BATCH 件ずつ表示。残りが無くなったらボタンを隠す。
+    const btn = document.getElementById('load-more');
+    if (btn) {
+      const batch = Number(btn.dataset.batch ?? 12);
+      btn.addEventListener('click', () => {
+        const hidden = Array.from(document.querySelectorAll<HTMLElement>('[data-card][hidden]'));
+        hidden.slice(0, batch).forEach((el) => el.removeAttribute('hidden'));
+        if (hidden.length <= batch) btn.setAttribute('hidden', '');
+      });
+    }
+  </script>
 </BaseLayout>
