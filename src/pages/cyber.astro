@@ -75,12 +75,12 @@ const roadmap = [
 ];
 
 // ⑩ Pricing「Ready to Start Your New Career?」（DesignSpec §5 / Q: 料金ハードコード）。
-// NOTE: 月額はライブ pricing ウィジェット表示が $129 だが、FAQ 本文・指示値は $128 で不一致。
-//       内部整合（FAQ Q2 と一致）を優先し $128 を採用。年額 $1,238（定価 $1,548 / 20% off）。
+// 月額 $129（ライブ pricing ウィジェット表示に合わせ確定）。FAQ Q2 本文の表記も $129 に統一済み。
+// 年額 $1,238（定価 $1,548 / 20% off）。
 const pricing = [
   {
     name: 'Monthly Plan',
-    price: '$128',
+    price: '$129',
     unit: '/ mo',
     was: null as string | null,
     tagline: 'For those who want to start flexibly. Cancel anytime.',
@@ -112,6 +112,10 @@ const includes = [
   'Optional internship',
 ];
 
+// FAQ 本文中の素朴なURLをクリック可能リンクへ。split の捕捉グループで奇数 index が URL になる。
+const URL_RE = /(https?:\/\/[^\s\])]+)/g;
+const splitUrls = (text: string) => text.split(URL_RE);
+
 // ⑪ FAQ（ライブ /cyber の JSON-LD FAQPage から正確移植 / 全11件）。
 // blocks: 段落(p) と 箇条書き(ul) を保持。アコーディオンは <details>/<summary> でゼロJS。
 const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; items: string[] })[] }[] = [
@@ -130,7 +134,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
   {
     q: 'How much does this community cost?',
     blocks: [
-      { type: 'p', text: 'There are two subscription plans available: a monthly plan at $128 and an annual plan at $1,238. The annual plan offers a 20% discount compared to the monthly rate. If you initially subscribe to the monthly plan, you can later switch to the annual plan. In that case, you will automatically be refunded for one month (this is a feature of the Skool platform).' },
+      { type: 'p', text: 'There are two subscription plans available: a monthly plan at $129 and an annual plan at $1,238. The annual plan offers a 20% discount compared to the monthly rate. If you initially subscribe to the monthly plan, you can later switch to the annual plan. In that case, you will automatically be refunded for one month (this is a feature of the Skool platform).' },
     ],
   },
   {
@@ -628,10 +632,28 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
             <div class="px-5 sm:px-6 pb-6 -mt-1 space-y-3 text-gray-300 leading-relaxed">
               {item.blocks.map((block) =>
                 block.type === 'p' ? (
-                  <p>{block.text}</p>
+                  <p>
+                    {splitUrls(block.text).map((part, idx) =>
+                      idx % 2 === 1 ? (
+                        <a href={part} target="_blank" rel="noopener noreferrer" class="text-brand underline break-words hover:text-brand/80">{part}</a>
+                      ) : (
+                        part
+                      )
+                    )}
+                  </p>
                 ) : (
                   <ul class="list-disc pl-5 space-y-1.5">
-                    {block.items.map((li) => <li>{li}</li>)}
+                    {block.items.map((li) => (
+                      <li>
+                        {splitUrls(li).map((part, idx) =>
+                          idx % 2 === 1 ? (
+                            <a href={part} target="_blank" rel="noopener noreferrer" class="text-brand underline break-words hover:text-brand/80">{part}</a>
+                          ) : (
+                            part
+                          )
+                        )}
+                      </li>
+                    ))}
                   </ul>
                 )
               )}
