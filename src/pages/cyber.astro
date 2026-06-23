@@ -21,12 +21,12 @@ const roleFiles = import.meta.glob('../assets/images/cyber/job-role/*.webp', { e
 const roleImg = (stem: string) =>
   (Object.entries(roleFiles).find(([p]) => p.endsWith(`${stem}.webp`))![1] as { default: ImageMetadata }).default;
 const roles: { label: string; img: ImageMetadata; video: string | null }[] = [
-  { label: 'SOC Analyst', img: roleImg('role-soc-analyst'), video: null },
-  { label: 'Cyber Defense Analyst', img: roleImg('role-cyber-defense-analyst'), video: null },
-  { label: 'IT Technician', img: roleImg('role-it-technician'), video: null },
-  { label: 'Risk Management Specialist', img: roleImg('role-risk-management-specialist'), video: null },
-  { label: 'Remote Cybersecurity Role', img: roleImg('role-remote-cybersecurity'), video: null },
-  { label: 'Cybersecurity Assurance Analyst (DoD)', img: roleImg('role-cybersecurity-assurance-analyst-dod'), video: null },
+  { label: 'SOC Analyst', img: roleImg('role-soc-analyst'), video: 'https://www.youtube.com/watch?v=QSmMqxkZPOU' },
+  { label: 'Cyber Defense Analyst', img: roleImg('role-cyber-defense-analyst'), video: 'https://www.youtube.com/watch?v=MpD3hPAQva8' },
+  { label: 'IT Technician', img: roleImg('role-it-technician'), video: 'https://www.youtube.com/watch?v=ecrYhfQTHv4' },
+  { label: 'Risk Management Specialist', img: roleImg('role-risk-management-specialist'), video: 'https://www.youtube.com/watch?v=lcbubMvBRUw' },
+  { label: 'Remote Cybersecurity Role', img: roleImg('role-remote-cybersecurity'), video: 'https://www.youtube.com/watch?v=3wGTLXZxj6I' },
+  { label: 'Cybersecurity Assurance Analyst (DoD)', img: roleImg('role-cybersecurity-assurance-analyst-dod'), video: 'https://www.youtube.com/watch?v=lgFuKt4G77o' },
 ];
 
 // /cyber 長尺LP（DesignSpec §5）。上から順にセクション実装中。
