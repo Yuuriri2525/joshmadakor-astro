@@ -5,7 +5,6 @@ description: "Discover how relocating can jumpstart your cybersecurity career wi
 pubDate: 2024-07-31
 category: "Uncategorized"
 tags: []
-youtube: "https://www.youtube.com/watch?v=XDq1PQf81kM"
 heroImage: "../../assets/images/blog/2445-hero.jpg"
 ---
 
