@@ -5,6 +5,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CyberRangeCTA from '../../components/CyberRangeCTA.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
+import BackToTop from '../../components/BackToTop.astro';
 
 // 投稿ID形式 /blog/{id}/ を生成（旧URL維持 / DesignSpec §6.3）。draft はビルド対象外。
 export const getStaticPaths = (async () => {
@@ -178,4 +179,6 @@ const shareLinks = [
       </aside>
     </div>
   </section>
+
+  <BackToTop />
 </BaseLayout>
