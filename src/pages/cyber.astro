@@ -3,6 +3,8 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import heroVideoPoster from '../assets/images/cyber/hero-video-poster.webp';
+import winnersPoster from '../assets/images/cyber/winners-interview-poster.webp';
+import joshPortrait from '../assets/images/cyber/josh-portrait.webp';
 
 // ⑥/⑦ テスティモニアル画像。
 // NOTE: 現状は (A)方式 = PC(md+)で success-01〜06、モバイル(<md)で win-01〜31 を出し分け（現行忠実再現）。
@@ -35,6 +37,8 @@ const roles: { label: string; img: ImageMetadata; video: string | null }[] = [
 
 const JOIN_URL = 'https://www.skool.com/cyber-range/about';
 const INTRO_VIDEO_URL = 'https://www.youtube.com/watch?v=RAEHt_sdxZo';
+// ⑧ Watch the Winners Interview。Josh のパートが 2629 秒から始まるため t=2629s を維持。
+const WINNERS_VIDEO_URL = 'https://www.youtube.com/watch?v=EX-Aa2dermM&t=2629s';
 
 // 統計（確定値・DesignSpec §1 / Q6）。Real Testimonials は実績ギャラリー(#real-wins)へアンカー。
 const stats = [
@@ -330,6 +334,90 @@ const roadmap = [
           />
         </div>
       ))}
+    </div>
+  </section>
+
+  <!-- ⑧ #1 Community in Skool Games + Watch the Winners Interview -->
+  <section class="bg-page py-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <span class="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-5 py-2 text-accent font-heading font-bold tracking-wide">
+        🏆 #1 Community in Skool Games
+      </span>
+      <p class="mt-5 text-gray-200 max-w-2xl mx-auto leading-relaxed">
+        The Cyber Range was ranked the <strong class="text-white">#1 community</strong> in the Skool Games —
+        out of thousands of communities on the platform. Hear directly from the winners.
+      </p>
+
+      {/* Watch the Winners Interview: サムネ＋再生ボタン → YouTube（新規タブ・t=2629s 維持）。iframe 不使用で軽量。 */}
+      <a
+        href={WINNERS_VIDEO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Watch the Winners Interview on YouTube"
+        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden border border-white/10"
+      >
+        <Image
+          src={winnersPoster}
+          alt="Watch the Winners Interview"
+          widths={[480, 768, 1280]}
+          sizes="(max-width: 768px) 100vw, 672px"
+          loading="lazy"
+          class="w-full h-auto block"
+        />
+        <span class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition">
+          <span class="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 group-hover:bg-white shadow-lg transition">
+            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-black ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        </span>
+      </a>
+      <p class="mt-4 text-sm font-heading font-semibold text-white">▶ Watch the Winners Interview</p>
+    </div>
+  </section>
+
+  <!-- ⑨ A Word From Josh / His Journey & Expertise -->
+  <section class="bg-page py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 items-center">
+        <!-- ポートレート -->
+        <div class="flex justify-center md:justify-end">
+          <Image
+            src={joshPortrait}
+            alt="Josh Madakor"
+            widths={[400, 640]}
+            sizes="(min-width: 768px) 420px, 80vw"
+            loading="lazy"
+            class="w-full max-w-sm h-auto rounded-2xl border border-white/10"
+          />
+        </div>
+
+        <!-- 本文 -->
+        <div>
+          <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl leading-tight">
+            A Word From Josh
+          </h2>
+          <blockquote class="mt-5 border-l-2 border-accent pl-5 text-gray-100 text-lg leading-relaxed italic">
+            “For 15 years, I was obsessed with one thing: skill stacking. I got really good at understanding
+            what employers want. This course is everything I learned, condensed into a direct path, so you
+            don't have to spend 15 years figuring it out yourself.”
+          </blockquote>
+
+          <h3 class="mt-8 font-heading font-bold text-brand text-xl">His Journey &amp; Expertise</h3>
+          <p class="mt-3 text-gray-300 leading-relaxed">
+            Josh Madakor started his IT career in 2007 as a help desk technician and has since developed
+            expertise in software development, system engineering, and cybersecurity. He has worked across
+            multiple industries including government, finance, defense, and private sector — notably as a
+            <strong class="text-white">Microsoft contractor</strong>, where he contributed to the Microsoft
+            Cloud Security Benchmark.
+          </p>
+          <p class="mt-4 text-gray-300 leading-relaxed">
+            Since 2020, Josh has grown his YouTube channel to <strong class="text-white">over 200,000
+            subscribers</strong>, helping individuals advance their IT and cybersecurity careers through
+            educational content.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 </BaseLayout>
