@@ -75,15 +75,42 @@ const hasMore = posts.length > INITIAL;
   <BackToTop />
 
   <script>
-    // Load More: 隠れているカードを BATCH 件ずつ表示。残りが無くなったらボタンを隠す。
-    const btn = document.getElementById('load-more');
-    if (btn) {
-      const batch = Number(btn.dataset.batch ?? 12);
-      btn.addEventListener('click', () => {
-        const hidden = Array.from(document.querySelectorAll<HTMLElement>('[data-card][hidden]'));
-        hidden.slice(0, batch).forEach((el) => el.removeAttribute('hidden'));
-        if (hidden.length <= batch) btn.setAttribute('hidden', '');
+    // Load More: 隠れているカードを BATCH 件ずつ表示。
+    // 展開件数とスクロール位置を sessionStorage に保存し、記事から戻ったときに復元する
+    //（バグ3: 戻ると初期12件にリセットされる問題への対処）。no-JS では初期12件のまま。
+    const btn = document.getElementById('load-more') as HTMLButtonElement | null;
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-card]'));
+    const COUNT_KEY = 'blog:loadmore:count';
+    const SCROLL_KEY = 'blog:loadmore:scroll';
+
+    if (cards.length) {
+      const initialVisible = cards.filter((c) => !c.hasAttribute('hidden')).length || cards.length;
+      const batch = btn ? Number(btn.dataset.batch) || initialVisible : initialVisible;
+
+      const reveal = (n: number) => {
+        cards.forEach((el, i) => (i < n ? el.removeAttribute('hidden') : el.setAttribute('hidden', '')));
+        if (btn) btn.toggleAttribute('hidden', n >= cards.length);
+      };
+
+      // 復元: 保存件数（初期件数以上）まで展開
+      const savedCount = Number(sessionStorage.getItem(COUNT_KEY)) || 0;
+      let shown = Math.min(Math.max(savedCount, initialVisible), cards.length);
+      reveal(shown);
+
+      // 展開して戻ってきた場合のみスクロール位置も復元（新規訪問では復元しない）
+      if (savedCount > initialVisible) {
+        const sy = sessionStorage.getItem(SCROLL_KEY);
+        if (sy !== null) requestAnimationFrame(() => window.scrollTo(0, Number(sy)));
+      }
+
+      btn?.addEventListener('click', () => {
+        shown = Math.min(shown + batch, cards.length);
+        reveal(shown);
+        sessionStorage.setItem(COUNT_KEY, String(shown));
       });
+
+      // 離脱時（記事リンクのクリック等）にスクロール位置を保存
+      window.addEventListener('pagehide', () => sessionStorage.setItem(SCROLL_KEY, String(window.scrollY)));
     }
   </script>
 </BaseLayout>
