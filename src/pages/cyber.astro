@@ -6,29 +6,27 @@ import heroVideoPoster from '../assets/images/cyber/hero-video-poster.webp';
 import winnersPoster from '../assets/images/cyber/winners-interview-poster.webp';
 import joshPortrait from '../assets/images/cyber/josh-portrait.webp';
 
-// ⑥/⑦ テスティモニアル画像。
-// NOTE: 現状は (A)方式 = PC(md+)で success-01〜06、モバイル(<md)で win-01〜31 を出し分け（現行忠実再現）。
-// 同じ就職報告メッセージの表示違いのため、両方を DOM に置くと最大37枚読み込む。
-// TODO(将来): (B) 1カルーセルに統一して軽量化する（レスポンシブで1セットのみ読み込む形へ）。
+// ⑦ Real Wins のテスティモニアル画像 = success-01〜06（全ビューポート共通の1カルーセルに統一）。
+// 旧 (A)方式（PC=success / モバイル=win-01〜31 出し分け）は §7 改修で廃止し、success セット6枚に集約。
 const glob = (g: Record<string, unknown>) =>
   Object.entries(g)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, m]) => (m as { default: ImageMetadata }).default);
 
 const successPc = glob(import.meta.glob('../assets/images/cyber/testimonial/pc/*.webp', { eager: true }));
-const winsMobile = glob(import.meta.glob('../assets/images/cyber/testimonial/mobile/*.webp', { eager: true }));
 
 // ⑥ 職種カード（成功者インタビューのサムネ）。video は次メッセージで受領→差し込み。
 const roleFiles = import.meta.glob('../assets/images/cyber/job-role/*.webp', { eager: true });
 const roleImg = (stem: string) =>
   (Object.entries(roleFiles).find(([p]) => p.endsWith(`${stem}.webp`))![1] as { default: ImageMetadata }).default;
-const roles: { label: string; img: ImageMetadata; video: string | null }[] = [
-  { label: 'SOC Analyst', img: roleImg('role-soc-analyst'), video: 'https://www.youtube.com/watch?v=QSmMqxkZPOU' },
-  { label: 'Cyber Defense Analyst', img: roleImg('role-cyber-defense-analyst'), video: 'https://www.youtube.com/watch?v=MpD3hPAQva8' },
-  { label: 'IT Technician', img: roleImg('role-it-technician'), video: 'https://www.youtube.com/watch?v=ecrYhfQTHv4' },
-  { label: 'Risk Management Specialist', img: roleImg('role-risk-management-specialist'), video: 'https://www.youtube.com/watch?v=lcbubMvBRUw' },
-  { label: 'Remote Cybersecurity Role', img: roleImg('role-remote-cybersecurity'), video: 'https://www.youtube.com/watch?v=3wGTLXZxj6I' },
-  { label: 'Cybersecurity Assurance Analyst (DoD)', img: roleImg('role-cybersecurity-assurance-analyst-dod'), video: 'https://www.youtube.com/watch?v=lgFuKt4G77o' },
+// 落差インパクト順（§6 の表通り）。before=前職 / after=現職。サムネ・動画は after に対応する実画像を流用。
+const roles: { before: string; after: string; img: ImageMetadata; video: string | null }[] = [
+  { before: 'Pro Chess Player', after: 'Cyber Defense Analyst', img: roleImg('role-cyber-defense-analyst'), video: 'https://www.youtube.com/watch?v=MpD3hPAQva8' },
+  { before: 'Mechanical Engineer', after: 'Assurance Analyst (DoD)', img: roleImg('role-cybersecurity-assurance-analyst-dod'), video: 'https://www.youtube.com/watch?v=lgFuKt4G77o' },
+  { before: 'Electrical Engineer', after: 'SOC Analyst', img: roleImg('role-soc-analyst'), video: 'https://www.youtube.com/watch?v=QSmMqxkZPOU' },
+  { before: 'Sales at Verizon', after: 'Risk Management Specialist', img: roleImg('role-risk-management-specialist'), video: 'https://www.youtube.com/watch?v=lcbubMvBRUw' },
+  { before: 'Wireless Industry Sales', after: 'Remote Cybersecurity', img: roleImg('role-remote-cybersecurity'), video: 'https://www.youtube.com/watch?v=3wGTLXZxj6I' },
+  { before: 'IT Help Desk', after: 'IT Technician', img: roleImg('role-it-technician'), video: 'https://www.youtube.com/watch?v=ecrYhfQTHv4' },
 ];
 
 // /cyber 長尺LP（DesignSpec §5）。上から順にセクション実装中。
@@ -47,12 +45,12 @@ const stats = [
   { value: '8,800+', label: 'Community Members' },
 ];
 
-// ツール（テキスト表記・ロゴなし）
+// ツール（テキスト表記・ロゴなし）。category = 緑・小キャップ / desc = 説明1行（副色）
 const tools = [
-  { name: 'Tenable', note: 'Vulnerability Management' },
-  { name: 'Microsoft Sentinel', note: 'SIEM' },
-  { name: 'Microsoft Defender for Endpoint', note: 'EDR' },
-  { name: 'Microsoft Azure', note: 'For Your VMs' },
+  { name: 'Tenable', category: 'Vulnerability Management', desc: 'Find and prioritize real vulnerabilities' },
+  { name: 'Microsoft Sentinel', category: 'SIEM', desc: 'Investigate security alerts at scale' },
+  { name: 'Defender for Endpoint', category: 'EDR', desc: 'Hunt threats on real endpoints' },
+  { name: 'Microsoft Azure', category: 'Your Enterprise Environment', desc: 'Where the whole live SOC actually runs' },
 ];
 
 // ⑤ Your Roadmap to Reality（3ステップ）
@@ -100,16 +98,12 @@ const pricing = [
   },
 ];
 
-// プラン共通の「What you get」（ライブ /cyber の "What you get" コピーを移植 = FAQ Q1 由来）。
-// ライブの pricing ウィジェット自体には特典の箇条書きが無いため、ここに共通リストとして配置。
+// 価格カード下のコンパクトな「含まれるもの再確認バー」（§10・アバウトページ公式リスト準拠）。
 const includes = [
-  'Real cybersecurity labs (200+ hours)',
-  'Live practice environment where you defend against actual attacks (in a safe, legal setting)',
-  'Multiple courses: Security Operations, Vulnerability Management, Threat Hunting',
-  'Job prep: Resume building, portfolio creation, interview practice',
-  'Access to enterprise-level security tools',
-  'Community support (Skool + Discord)',
-  'Optional internship',
+  'Resume-backed internship',
+  'Live production SOC access',
+  'Weekly live coaching with Josh',
+  'Enterprise tools + exam prep',
 ];
 
 // FAQ 本文中の素朴なURLをクリック可能リンクへ。split の捕捉グループで奇数 index が URL になる。
@@ -206,46 +200,55 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
 >
   <!-- ① ヒーロー -->
   <section class="bg-page py-20 sm:py-24">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="font-heading font-bold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">
-        🎯 Welcome to the Cyber Range
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="font-heading text-sm font-semibold uppercase tracking-[0.18em] text-cyber-accent">
+        By Josh Madakor
+      </p>
+      <h1 class="mt-4 font-heading font-bold text-cyber-text text-3xl sm:text-4xl lg:text-5xl leading-tight">
+        Real cybersecurity experience.<br />
+        <span class="text-cyber-accent">Before you're hired.</span>
       </h1>
-      <p class="mt-5 text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto">
-        Live-Fire Cyber Range with a Hands-On Cyber Course for Each Security Operations Topic!
+      <p class="mt-5 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
+        Train in a live SOC. Use the tools real security teams use. Get hired.
       </p>
 
-      {/* 紹介動画: サムネ＋再生ボタン → YouTube（新規タブ）。iframe 不使用で軽量。 */}
+      {/* 紹介動画: サムネ＋再生ボタン → YouTube（新規タブ）。iframe 不使用で軽量。H1に主役を譲るため縮小。 */}
       <a
         href={INTRO_VIDEO_URL}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Watch the Cyber Range intro video on YouTube"
-        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden border border-white/10"
+        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden border border-cyber-line"
       >
         <Image
           src={heroVideoPoster}
           alt="Cyber Range intro video"
           widths={[480, 768, 1280]}
-          sizes="(max-width: 768px) 100vw, 672px"
+          sizes="(max-width: 768px) 90vw, 672px"
           class="w-full h-auto block"
         />
         <span class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition">
-          <span class="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 group-hover:bg-white shadow-lg transition">
-            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-black ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <span class="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/90 group-hover:bg-white shadow-lg transition">
+            <svg class="w-6 h-6 sm:w-7 sm:h-7 text-black ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
           </span>
         </span>
       </a>
 
-      <a
-        href={JOIN_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-block mt-8 rounded-full bg-gradient-to-r from-btn-start to-btn-end px-8 py-3 text-white text-sm font-semibold tracking-wide transition hover:brightness-110"
-      >
-        Get Started Now
-      </a>
+      <div class="mt-8">
+        <a
+          href={JOIN_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block rounded-full bg-cyber-accent px-10 py-4 text-white text-base font-semibold tracking-wide shadow-[0_0_0_4px_rgba(224,49,49,0.18)] transition hover:bg-cyber-accent-hover"
+        >
+          Get Started Now
+        </a>
+        <p class="mt-4 text-sm text-gray-400">
+          Train at your own pace · Cancel anytime · Cyber internships available
+        </p>
+      </div>
     </div>
   </section>
 
@@ -256,12 +259,12 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
         {stats.map((s) => {
           const inner = (
             <>
-              <p class="font-heading font-bold text-brand text-4xl sm:text-5xl">{s.value}</p>
+              <p class="font-heading font-bold text-cyber-accent text-4xl sm:text-5xl">{s.value}</p>
               <p class="mt-2 text-gray-200">{s.label}</p>
             </>
           );
           return (
-            <div class="rounded-xl border border-white/10 bg-white/[0.03] p-8">
+            <div class="rounded-xl border border-cyber-line bg-cyber-surface p-8">
               {s.href ? <a href={s.href} class="block hover:opacity-90 transition">{inner}</a> : inner}
             </div>
           );
@@ -270,103 +273,50 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
     </div>
   </section>
 
-  <!-- ③ Welcome / Cyber Internships + ツール -->
+  <!-- ③ Live SOC + Tools（旧 Welcome to The Cyber Range!） -->
   <section class="bg-page pb-24">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl leading-tight">
-        Welcome to The Cyber Range! <span class="text-brand">(Cyber Internships Available)</span>
+      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl leading-tight">
+        You won't practice on toy labs.<br />
+        <span class="text-cyber-accent">You'll defend a live network.</span>
       </h2>
-      <p class="mt-5 text-gray-200 max-w-3xl mx-auto leading-relaxed">
-        As a community member, you'll have access to a LIVE production SOC (Security Operations Center)
-        where you will gain experience using fully licensed, enterprise-grade cybersecurity tools.
+
+      <p class="mt-6">
+        <span class="inline-flex items-center gap-2 rounded-full border-[0.5px] border-cyber-win/35 bg-cyber-win/10 px-4 py-2 text-sm font-semibold text-cyber-win">
+          ✓ Resume-backed cyber internships included — with verifiable work experience
+        </span>
       </p>
 
-      <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <p class="mt-5 text-gray-200 max-w-3xl mx-auto leading-relaxed">
+        As a member, you work inside a live production SOC built in Microsoft Azure — the same
+        environment a real security team operates in, using the same fully-licensed, enterprise-grade
+        tools they use on the job.
+      </p>
+
+      <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
         {tools.map((t) => (
-          <div class="rounded-xl border border-white/10 bg-white/[0.03] p-5 text-center">
-            <p class="font-heading font-bold text-white">{t.name}</p>
-            <p class="mt-1 text-sm text-gray-400">{t.note}</p>
+          <div class="rounded-xl border border-cyber-line bg-cyber-surface p-6 text-center">
+            <p class="font-heading font-bold text-cyber-text">{t.name}</p>
+            <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-cyber-accent">{t.category}</p>
+            <p class="mt-2 text-sm text-[#a1a1aa]">{t.desc}</p>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ④ Do you have these concerns?（強調Q&A 3件） -->
-  <section class="bg-page py-20">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center mb-10">
-        Do you have these concerns?
-      </h2>
-
-      <div class="space-y-6">
-        <!-- Q1 -->
-        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-          <h3 class="font-heading font-bold text-brand text-lg sm:text-xl">
-            Can I get the cybersecurity job with zero experience?
-          </h3>
-          <p class="mt-3 text-gray-200 leading-relaxed">
-            Yes — it's possible. <strong class="text-white">58% of Cyber Range graduates</strong> land
-            cybersecurity roles directly. The other 42% start in tech roles that lead into security. You
-            get hands-on labs that simulate real job tasks, plus resume and interview prep. We support you
-            from skill-building all the way to job hunting. It takes effort. But this is the shortest path.
-          </p>
-          <a href="#real-wins" class="inline-block mt-4 text-accent hover:underline text-sm font-semibold">
-            👉 See real success stories
-          </a>
-        </div>
-
-        <!-- Q2 -->
-        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-          <h3 class="font-heading font-bold text-brand text-lg sm:text-xl">
-            Does this program provide a clear roadmap from zero to getting hired?
-          </h3>
-          <p class="mt-3 text-gray-200 leading-relaxed">
-            Yes. Cyber Range comes with a clear, structured roadmap you can follow step by step. You'll
-            know exactly <strong class="text-white">what to learn, in what order, and why</strong> — from
-            repeating labs the right way, to building a resume and portfolio that actually reflects
-            real-world skills. Instead of guessing what to study next, you'll move forward with confidence,
-            knowing each step is preparing you for interviews and real job requirements.
-          </p>
-          <a href="#real-wins" class="inline-block mt-4 text-accent hover:underline text-sm font-semibold">
-            👉 See real success stories
-          </a>
-        </div>
-
-        <!-- Q3 -->
-        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-          <h3 class="font-heading font-bold text-brand text-lg sm:text-xl">
-            Is this truly worth it for my future?
-          </h3>
-          <p class="mt-3 text-gray-200 leading-relaxed">
-            Cybersecurity isn't a short-term trend — it's a field that keeps growing and evolving. Even
-            with AI and automation advancing, companies still need skilled humans to investigate threats,
-            respond to incidents, and protect systems. Cyber Range helps you invest your time and energy in
-            <strong class="text-white">practical, future-proof skills</strong>. If you're willing to
-            consistently show up, practice, and learn, this program can change you from “interested in
-            cybersecurity” to someone who actually has
-            <strong class="text-white">hands-on experience and job-ready confidence</strong>.
-          </p>
-          <a href="#real-wins" class="inline-block mt-4 text-accent hover:underline text-sm font-semibold">
-            → See real success stories
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ⑤ Your Roadmap to Reality（3ステップ） -->
-  <section class="bg-page py-20">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center mb-12">
+  <!-- ④ Your Roadmap to Reality（3ステップ・Concernsより前に移動 / 構造は将来の背景装飾用に温存） -->
+  <section class="relative overflow-hidden bg-page py-20">
+    <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center mb-12">
         Your Roadmap to Reality
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {roadmap.map((step) => (
-          <div class="rounded-xl border border-white/10 bg-white/[0.03] p-8">
-            <p class="font-heading font-bold text-accent text-4xl">{step.num}</p>
-            <h3 class="font-heading font-bold text-white text-xl mt-3">{step.title}</h3>
+          <div class="rounded-xl border border-cyber-line bg-cyber-surface p-8 shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+            <p class="font-heading font-bold text-cyber-accent text-4xl">{step.num}</p>
+            <h3 class="font-heading font-bold text-cyber-text text-xl mt-3">{step.title}</h3>
             <p class="mt-3 text-gray-300 leading-relaxed text-sm">{step.desc}</p>
           </div>
         ))}
@@ -374,20 +324,79 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
     </div>
   </section>
 
-  <!-- ⑥ Success Stories & Graduate Voices（職種インタビューのサムネ6枚） -->
+  <!-- ⑤ Do you have these concerns?（強調Q&A 3件・Roadmapより後ろに移動） -->
   <section class="bg-page py-20">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center mb-12">
-        Success Stories &amp; Graduate Voices
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center mb-10 leading-tight">
+        The questions you're probably<br />
+        asking yourself
       </h2>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="space-y-10 max-w-3xl mx-auto">
+        <!-- Q1 -->
+        <div class="border-l-[3px] border-cyber-accent pl-4 sm:pl-5">
+          <h3 class="font-heading font-semibold text-cyber-accent text-lg sm:text-xl">
+            Can I really do this with zero experience?
+          </h3>
+          <p class="mt-3 text-gray-400 leading-relaxed">
+            Yes — and the numbers back it up. 58% of Cyber Range graduates land cybersecurity roles
+            directly. The other 42% start in adjacent IT roles that lead straight into security. You get
+            hands-on labs, resume and interview prep, and support the whole way.
+          </p>
+          <p class="mt-2 text-xs text-gray-500">Based on 2025 member outcomes</p>
+          <a href="#real-wins" class="inline-block mt-4 text-cyber-accent hover:underline text-sm font-semibold">
+            → See real success stories
+          </a>
+        </div>
+
+        <!-- Q2 -->
+        <div class="border-l-[3px] border-cyber-accent pl-4 sm:pl-5">
+          <h3 class="font-heading font-semibold text-cyber-accent text-lg sm:text-xl">
+            Will I actually know what to do — or just get handed a pile of videos?
+          </h3>
+          <p class="mt-3 text-gray-400 leading-relaxed">
+            No pile of videos. You follow a clear, structured roadmap — you always know exactly what to
+            learn, in what order, and why. Instead of guessing, you build skills on a real network that
+            reflect what the job actually requires.
+          </p>
+          <a href="#real-wins" class="inline-block mt-4 text-cyber-accent hover:underline text-sm font-semibold">
+            → See real success stories
+          </a>
+        </div>
+
+        <!-- Q3 -->
+        <div class="border-l-[3px] border-cyber-accent pl-4 sm:pl-5">
+          <h3 class="font-heading font-semibold text-cyber-accent text-lg sm:text-xl">
+            Will this still matter in five years?
+          </h3>
+          <p class="mt-3 text-gray-400 leading-relaxed">
+            Security only grows as AI and automation expand — someone still has to investigate incidents
+            and defend systems. The Cyber Range gives you hands-on, job-ready skills, not theory that
+            expires. That's what keeps you valuable as the field changes.
+          </p>
+          <a href="#real-wins" class="inline-block mt-4 text-cyber-accent hover:underline text-sm font-semibold">
+            → See real success stories
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑥ Success Stories & Graduate Voices（職種インタビューのサムネ6枚） -->
+  <section class="bg-page py-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center">
+        Success Stories &amp; Graduate Voices
+      </h2>
+      <p class="mt-3 text-center text-gray-400">Real people. Real career changes.</p>
+
+      <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {roles.map((role) => {
           const thumb = (
-            <span class="group relative block rounded-xl overflow-hidden border border-white/10">
+            <span class="group relative block">
               <Image
                 src={role.img}
-                alt={`${role.label} — graduate interview`}
+                alt={`${role.after} — graduate interview`}
                 widths={[400, 640]}
                 sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
                 loading="lazy"
@@ -403,15 +412,19 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
             </span>
           );
           return (
-            <div>
+            <div class="rounded-xl overflow-hidden border border-cyber-line bg-cyber-surface">
               {role.video ? (
-                <a href={role.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${role.label} interview on YouTube`}>
+                <a href={role.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${role.after} interview on YouTube`}>
                   {thumb}
                 </a>
               ) : (
                 thumb
               )}
-              <p class="mt-3 text-center font-heading font-semibold text-white">{role.label}</p>
+              {/* チケット型フッター: カード地より少し明るい帯＋左に赤の縦アクセント */}
+              <div class="border-t border-cyber-line border-l-[3px] border-l-cyber-accent bg-white/[0.04] px-4 py-3">
+                <p class="text-sm text-gray-400">{role.before}</p>
+                <p class="mt-0.5 font-heading font-semibold text-cyber-win">{role.after}</p>
+              </div>
             </div>
           );
         })}
@@ -421,57 +434,148 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
 
   <!-- ⑦ Real Wins from the Community（報告カルーセル / id=real-wins = C2のアンカー先） -->
   <section id="real-wins" class="bg-page py-20 scroll-mt-20">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center">
-        Real Wins from the Community
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center">
+        Real Wins. Posted by Real Members.
       </h2>
-      <p class="mt-3 text-center text-gray-300">This isn't just a dream. It's a reality.</p>
+      <p class="mt-3 text-center text-gray-400">
+        <span class="text-cyber-accent font-semibold">150+ job offers</span> shared by members since 2024 — and counting.
+      </p>
+
+      {/* 横長1枚表示＋左右送り。アクティブdrct追従・ドット・カウンターは依存なしの小スクリプトで制御。 */}
+      <div class="relative mt-12" data-rw-carousel>
+        <div
+          data-rw-track
+          class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {successPc.map((img, idx) => (
+            <div class="snap-center shrink-0 w-full" data-rw-slide>
+              <Image
+                src={img}
+                alt={`Member job offer ${idx + 1}`}
+                widths={[480, 768, 1024]}
+                sizes="(min-width: 1024px) 1024px, 92vw"
+                loading="lazy"
+                class="w-full h-auto rounded-xl border border-cyber-line"
+              />
+            </div>
+          ))}
+        </div>
+
+        <!-- 左右送りボタン（直径42px・暗い円・cyber-line枠・影） -->
+        <button
+          type="button"
+          data-rw-prev
+          aria-label="Previous slide"
+          class="absolute left-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-[42px] h-[42px] rounded-full bg-[rgba(20,20,20,0.92)] border border-cyber-line shadow-lg transition hover:bg-[rgba(20,20,20,1)]"
+        >
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          data-rw-next
+          aria-label="Next slide"
+          class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-[42px] h-[42px] rounded-full bg-[rgba(20,20,20,0.92)] border border-cyber-line shadow-lg transition hover:bg-[rgba(20,20,20,1)]"
+        >
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- ドットインジケーター（全6枚）＋現在地カウンター -->
+      <div class="mt-5 flex items-center justify-center gap-4">
+        <div class="flex items-center gap-2">
+          {successPc.map((_, idx) => (
+            <button
+              type="button"
+              data-rw-dot
+              aria-label={`Go to slide ${idx + 1}`}
+              class:list={[
+                'h-2 rounded-full transition-all',
+                idx === 0 ? 'w-6 bg-cyber-accent' : 'w-2 bg-gray-600',
+              ]}
+            ></button>
+          ))}
+        </div>
+        <span class="text-xs text-gray-500" data-rw-counter>1 / {successPc.length}</span>
+      </div>
+
+      <!-- セクション CTA -->
+      <div class="mt-10 text-center">
+        <a
+          href={JOIN_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block rounded-full bg-cyber-accent px-8 py-3 text-white text-sm font-semibold tracking-wide transition hover:bg-cyber-accent-hover"
+        >
+          Start Your Journey
+        </a>
+      </div>
     </div>
 
-    {/* (A)方式: PC は success-01〜06、モバイルは win-01〜31 を出し分け。両方 CSS scroll-snap 横カルーセル。 */}
-    <!-- PC（md+） -->
-    <div class="hidden md:flex mt-12 gap-6 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 lg:px-8 pb-4">
-      {successPc.map((img, idx) => (
-        <div class="snap-center shrink-0 w-[60%] lg:w-[32%]">
-          <Image
-            src={img}
-            alt={`Graduate success story ${idx + 1}`}
-            widths={[480, 720]}
-            sizes="(min-width: 1024px) 32vw, 60vw"
-            loading="lazy"
-            class="w-full h-auto rounded-xl border border-white/10"
-          />
-        </div>
-      ))}
-    </div>
+    <script>
+      // 依存なしカルーセル制御（送りボタン / ドット / カウンター）。
+      const root = document.querySelector('[data-rw-carousel]');
+      if (root) {
+        const track = root.querySelector('[data-rw-track]') as HTMLElement;
+        const slides = Array.from(root.querySelectorAll('[data-rw-slide]')) as HTMLElement[];
+        const dots = Array.from(document.querySelectorAll('[data-rw-dot]')) as HTMLElement[];
+        const counter = document.querySelector('[data-rw-counter]');
+        const prev = root.querySelector('[data-rw-prev]');
+        const next = root.querySelector('[data-rw-next]');
+        const total = slides.length;
+        let current = 0;
 
-    <!-- モバイル（<md） -->
-    <div class="flex md:hidden mt-10 gap-4 overflow-x-auto snap-x snap-mandatory px-4 pb-4">
-      {winsMobile.map((img, idx) => (
-        <div class="snap-center shrink-0 w-[78%]">
-          <Image
-            src={img}
-            alt={`Community win ${idx + 1}`}
-            widths={[320, 480]}
-            sizes="78vw"
-            loading="lazy"
-            class="w-full h-auto rounded-xl border border-white/10"
-          />
-        </div>
-      ))}
-    </div>
+        const render = (i: number) => {
+          current = Math.max(0, Math.min(total - 1, i));
+          dots.forEach((d, idx) => {
+            const on = idx === current;
+            d.classList.toggle('w-6', on);
+            d.classList.toggle('bg-cyber-accent', on);
+            d.classList.toggle('w-2', !on);
+            d.classList.toggle('bg-gray-600', !on);
+          });
+          if (counter) counter.textContent = `${current + 1} / ${total}`;
+        };
+        const go = (i: number) => {
+          const idx = Math.max(0, Math.min(total - 1, i));
+          slides[idx]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        };
+
+        prev?.addEventListener('click', () => go(current - 1));
+        next?.addEventListener('click', () => go(current + 1));
+        dots.forEach((d, idx) => d.addEventListener('click', () => go(idx)));
+
+        // スクロール位置から現在地を追従
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                const idx = slides.indexOf(e.target as HTMLElement);
+                if (idx >= 0) render(idx);
+              }
+            });
+          },
+          { root: track, threshold: 0.6 }
+        );
+        slides.forEach((s) => io.observe(s));
+        render(0);
+      }
+    </script>
   </section>
 
   <!-- ⑧ #1 Community in Skool Games + Watch the Winners Interview -->
   <section class="bg-page py-20">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <span class="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-5 py-2 text-accent font-heading font-bold tracking-wide">
-        🏆 #1 Community in Skool Games
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <span class="inline-flex items-center gap-2 rounded-full border border-cyber-accent/40 bg-cyber-accent/10 px-5 py-2 text-cyber-accent font-heading font-bold tracking-wide">
+        🏆 #1 Community in the Skool Games
       </span>
-      <p class="mt-5 text-gray-200 max-w-2xl mx-auto leading-relaxed">
-        The Cyber Range was ranked the <strong class="text-white">#1 community</strong> in the Skool Games —
-        out of thousands of communities on the platform. Hear directly from the winners.
-      </p>
+      <h2 class="mt-6 font-heading font-bold text-cyber-text text-2xl sm:text-3xl leading-tight">
+        Ranked #1 out of thousands of communities.
+      </h2>
 
       {/* Watch the Winners Interview: サムネ＋再生ボタン → YouTube（新規タブ・t=2629s 維持）。iframe 不使用で軽量。 */}
       <a
@@ -479,7 +583,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Watch the Winners Interview on YouTube"
-        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden border border-white/10"
+        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden border border-cyber-line cursor-pointer"
       >
         <Image
           src={winnersPoster}
@@ -487,23 +591,22 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
           widths={[480, 768, 1280]}
           sizes="(max-width: 768px) 100vw, 672px"
           loading="lazy"
-          class="w-full h-auto block"
+          class="w-full h-auto block transition-transform duration-[400ms] group-hover:scale-[1.03]"
         />
         <span class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition">
-          <span class="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 group-hover:bg-white shadow-lg transition">
+          <span class="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 group-hover:bg-white shadow-lg transition duration-300 group-hover:scale-110">
             <svg class="w-7 h-7 sm:w-8 sm:h-8 text-black ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
           </span>
         </span>
       </a>
-      <p class="mt-4 text-sm font-heading font-semibold text-white">▶ Watch the Winners Interview</p>
     </div>
   </section>
 
   <!-- ⑨ A Word From Josh / His Journey & Expertise -->
   <section class="bg-page py-20">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 items-center">
         <!-- ポートレート -->
         <div class="flex justify-center md:justify-end">
@@ -513,31 +616,31 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
             widths={[400, 640]}
             sizes="(min-width: 768px) 420px, 80vw"
             loading="lazy"
-            class="w-full max-w-sm h-auto rounded-2xl border border-white/10"
+            class="w-full max-w-sm h-auto rounded-2xl border border-cyber-line"
           />
         </div>
 
         <!-- 本文 -->
         <div>
-          <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl leading-tight">
+          <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl leading-tight">
             A Word From Josh
           </h2>
-          <blockquote class="mt-5 border-l-2 border-accent pl-5 text-gray-100 text-lg leading-relaxed italic">
+          <blockquote class="mt-5 border-l-2 border-cyber-accent pl-5 text-gray-100 text-lg leading-relaxed italic">
             “For 15 years, I was obsessed with one thing: skill stacking. I got really good at understanding
             what employers want. This course is everything I learned, condensed into a direct path, so you
             don't have to spend 15 years figuring it out yourself.”
           </blockquote>
 
-          <h3 class="mt-8 font-heading font-bold text-brand text-xl">His Journey &amp; Expertise</h3>
+          <h3 class="mt-8 font-heading font-bold text-cyber-accent text-xl">His Journey &amp; Expertise</h3>
           <p class="mt-3 text-gray-300 leading-relaxed">
             Josh Madakor started his IT career in 2007 as a help desk technician and has since developed
             expertise in software development, system engineering, and cybersecurity. He has worked across
             multiple industries including government, finance, defense, and private sector — notably as a
-            <strong class="text-white">Microsoft contractor</strong>, where he contributed to the Microsoft
+            <strong class="text-cyber-text">Microsoft contractor</strong>, where he contributed to the Microsoft
             Cloud Security Benchmark.
           </p>
           <p class="mt-4 text-gray-300 leading-relaxed">
-            Since 2020, Josh has grown his YouTube channel to <strong class="text-white">over 200,000
+            Since 2020, Josh has grown his YouTube channel to <strong class="text-cyber-text">over 200,000
             subscribers</strong>, helping individuals advance their IT and cybersecurity careers through
             educational content.
           </p>
@@ -546,43 +649,51 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
     </div>
   </section>
 
+  <!-- ⑨-3 You get Josh（bio と Pricing の間・コミュニティ実態を事実厳守で訴求） -->
+  <section class="bg-page pb-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto rounded-2xl border border-cyber-line bg-cyber-surface p-8 sm:p-10 text-center">
+        <h3 class="font-heading font-bold text-cyber-text text-xl sm:text-2xl leading-tight">
+          This is a community, not a course you watch alone.
+        </h3>
+        <p class="mt-5 text-gray-300 leading-relaxed">
+          Post your progress and Josh himself often jumps in to reply. Every week, he runs live
+          coaching where you can ask him anything and get direct feedback — not a ticket queue, but a
+          real conversation.
+        </p>
+        <p class="mt-4 text-gray-300 leading-relaxed">
+          The environment is just as real. Our production SOC runs in Microsoft Azure alongside
+          hundreds of other members — and gets breached by real attackers, by design. When it
+          happens, you go in and threat-hunt it like an analyst would on the job.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- ⑩ Pricing「Ready to Start Your New Career?」 -->
   <section class="bg-page py-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center">
+      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center">
         Ready to Start Your New Career?
       </h2>
-
-      {/* プラン共通の同梱内容（ライブ "What you get" コピー） */}
-      <div class="mt-10 max-w-2xl mx-auto rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-        <p class="font-heading font-bold text-white text-center">Every plan includes</p>
-        <ul class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-          {includes.map((item) => (
-            <li class="flex items-start gap-2 text-gray-200 text-sm">
-              <span class="text-accent mt-0.5">✓</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
 
       <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
         {pricing.map((plan) => (
           <div
             class:list={[
               'relative flex flex-col rounded-2xl border p-8 text-center',
-              plan.highlight ? 'border-brand bg-brand/[0.06]' : 'border-white/10 bg-white/[0.03]',
+              plan.highlight ? 'border-cyber-accent bg-cyber-accent/[0.06]' : 'border-cyber-line bg-cyber-surface',
             ]}
           >
             {plan.badge && (
-              <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-btn-start to-btn-end px-4 py-1 text-xs font-semibold text-white">
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-cyber-accent px-4 py-1 text-xs font-semibold text-white">
                 {plan.badge}
               </span>
             )}
-            <p class="font-heading font-bold text-white text-lg">{plan.name}</p>
+            <p class="font-heading font-bold text-cyber-text text-lg">{plan.name}</p>
             <div class="mt-4 flex items-end justify-center gap-1">
               {plan.was && <span class="text-gray-500 line-through text-lg mb-1">{plan.was}</span>}
-              <span class="font-heading font-bold text-brand text-4xl sm:text-5xl">{plan.price}</span>
+              <span class="font-heading font-bold text-cyber-text text-4xl sm:text-5xl">{plan.price}</span>
               <span class="text-gray-300 mb-1">{plan.unit}</span>
             </div>
             <p class="mt-4 text-gray-300 text-sm flex-grow">{plan.tagline}</p>
@@ -594,8 +705,8 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
                 class:list={[
                   'inline-block w-full rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition',
                   plan.highlight
-                    ? 'bg-gradient-to-r from-btn-start to-btn-end text-white hover:brightness-110'
-                    : 'border border-white/30 text-white hover:bg-white hover:text-black',
+                    ? 'bg-cyber-accent text-white hover:bg-cyber-accent-hover'
+                    : 'border border-cyber-accent text-cyber-accent hover:bg-cyber-accent hover:text-white',
                 ]}
               >
                 {plan.cta}
@@ -604,23 +715,36 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
           </div>
         ))}
       </div>
+
+      {/* 含まれるもの再確認バー（価格カードと同じ max-w-3xl で左右を揃える・2×2グリッド/モバイル1列・緑チェック） */}
+      <div class="mt-8 max-w-3xl mx-auto">
+        <p class="text-center text-gray-400 text-xs sm:text-sm font-medium">Every plan includes</p>
+        <ul class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 max-w-2xl mx-auto text-gray-400 text-xs sm:text-sm">
+          {includes.map((item) => (
+            <li class="inline-flex items-center gap-1.5">
+              <span class="text-cyber-win">✓</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </section>
 
   <!-- ⑪ FAQ（<details>/<summary> でゼロJSアコーディオン / 全11件） -->
   <section class="bg-page py-20">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-white text-2xl sm:text-3xl text-center mb-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center mb-12">
         Frequently Asked Questions
       </h2>
 
-      <div class="space-y-4">
+      <div class="max-w-3xl mx-auto border-t border-white/10">
         {faqs.map((item) => (
-          <details class="group rounded-xl border border-white/10 bg-white/[0.03] overflow-hidden">
-            <summary class="flex items-center justify-between gap-4 cursor-pointer list-none p-5 sm:p-6 [&::-webkit-details-marker]:hidden">
-              <span class="font-heading font-semibold text-white">{item.q}</span>
+          <details class="group border-b border-white/10">
+            <summary class="flex items-center justify-between gap-4 cursor-pointer list-none py-5 sm:py-6 [&::-webkit-details-marker]:hidden">
+              <span class="font-heading font-semibold text-cyber-text">{item.q}</span>
               <svg
-                class="w-5 h-5 flex-shrink-0 text-accent transition-transform duration-200 group-open:rotate-180"
+                class="w-5 h-5 flex-shrink-0 text-cyber-accent transition-transform duration-200 group-open:rotate-180"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -629,13 +753,13 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </summary>
-            <div class="px-5 sm:px-6 pb-6 -mt-1 space-y-3 text-gray-300 leading-relaxed">
+            <div class="pb-5 sm:pb-6 -mt-1 space-y-3 text-gray-400 leading-relaxed">
               {item.blocks.map((block) =>
                 block.type === 'p' ? (
                   <p>
                     {splitUrls(block.text).map((part, idx) =>
                       idx % 2 === 1 ? (
-                        <a href={part} target="_blank" rel="noopener noreferrer" class="text-brand underline break-words hover:text-brand/80">{part}</a>
+                        <a href={part} target="_blank" rel="noopener noreferrer" class="text-cyber-accent underline break-words hover:text-cyber-accent/80">{part}</a>
                       ) : (
                         part
                       )
@@ -647,7 +771,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
                       <li>
                         {splitUrls(li).map((part, idx) =>
                           idx % 2 === 1 ? (
-                            <a href={part} target="_blank" rel="noopener noreferrer" class="text-brand underline break-words hover:text-brand/80">{part}</a>
+                            <a href={part} target="_blank" rel="noopener noreferrer" class="text-cyber-accent underline break-words hover:text-cyber-accent/80">{part}</a>
                           ) : (
                             part
                           )

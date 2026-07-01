@@ -25,6 +25,18 @@
   --color-btn-start: #6fa24a;
   --color-btn-end: #15a1cc;
 
+  /*
+   * Cyber ページ専用トークン（/cyber のみで使用）。
+   * 配色方針: 赤をブランドアクセント、緑は「達成記号」にのみ限定。
+   * 共通トークン（accent 等）とは別系統。他ページへ波及させないため分離。
+   */
+  --color-cyber-accent: #E03131;        /* 赤ブランド（CTA・強調文字・線） */
+  --color-cyber-accent-hover: #FF4D4D;  /* 赤ホバー */
+  --color-cyber-win: #4ade80;           /* 達成記号の緑（チェック等に限定） */
+  --color-cyber-surface: #141414;       /* カード面 */
+  --color-cyber-line: #475569;          /* 罫線・ボーダー */
+  --color-cyber-text: #e5e5e5;          /* オフホワイト本文 */
+
   /* タイポグラフィ（Montserrat / Elementor 実フォント） */
   --font-sans: "Montserrat", "Helvetica Neue", Arial, sans-serif;
   --font-heading: "Montserrat", "Helvetica Neue", Arial, sans-serif;

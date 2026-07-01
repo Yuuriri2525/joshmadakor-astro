@@ -1,0 +1,91 @@
+---
+// NeonWave.astro
+// ロードマップなどのセクション背景に、画面いっぱい横切るネオングリーンの波線を敷く装飾コンポーネント。
+// 使い方:
+//   1) このファイルを src/components/ に置く
+//   2) 波線を敷きたいセクションを position:relative にする
+//   3) その中の先頭で <NeonWave /> を呼び、カード等は position:relative; z-index:1 で前面に出す
+//
+// Props:
+//   class       … 追加クラス（位置やheightの微調整用）
+//   opacityGlow … グロー下地の濃さ（0〜1, 既定 0.4）
+interface Props {
+  class?: string;
+  opacityGlow?: number;
+}
+const { class: className = "", opacityGlow = 0.4 } = Astro.props;
+// filterのidはページ内で衝突しないようユニーク化
+const uid = "nw-" + Math.random().toString(36).slice(2, 8);
+---
+
+<svg
+  class={`neon-wave ${className}`}
+  viewBox="0 0 1440 320"
+  preserveAspectRatio="none"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <linearGradient id={`${uid}-stroke`} x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#bef264"></stop>
+      <stop offset="50%" stop-color="#4ade80"></stop>
+      <stop offset="100%" stop-color="#bef264"></stop>
+    </linearGradient>
+    <filter id={`${uid}-glow`} x="-20%" y="-80%" width="140%" height="260%">
+      <feGaussianBlur stdDeviation="8" result="b"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="b"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  {/* グロー用の太い下地 */}
+  <path
+    d="M-40,150 C 400,60 700,60 1040,170 S 1400,210 1480,190"
+    fill="none"
+    stroke="#4ade80"
+    stroke-width="16"
+    stroke-linecap="round"
+    opacity={opacityGlow}
+    filter={`url(#${uid}-glow)`}
+  ></path>
+
+  {/* 本体ライン */}
+  <path
+    d="M-40,150 C 400,60 700,60 1040,170 S 1400,210 1480,190"
+    fill="none"
+    stroke={`url(#${uid}-stroke)`}
+    stroke-width="9"
+    stroke-linecap="round"
+    filter={`url(#${uid}-glow)`}
+  ></path>
+</svg>
+
+<style>
+  .neon-wave {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 230px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* モバイルでは波の振幅が間延びするので少し縮める */
+  @media (max-width: 640px) {
+    .neon-wave {
+      height: 160px;
+    }
+  }
+
+  /* アニメーションを嫌う設定の人には何もしない（静止のままなので実害はないが念のため） */
+  @media (prefers-reduced-motion: reduce) {
+    .neon-wave {
+      transition: none;
+    }
+  }
+</style>
