@@ -1,10 +1,10 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import heroVideoPoster from '../assets/images/cyber/hero-video-poster.webp';
 import winnersPoster from '../assets/images/cyber/winners-interview-poster.webp';
-import joshPortrait from '../assets/images/cyber/josh-portrait.webp';
+import joshPortrait from '../assets/images/cyber/josh-portrait-tp.webp';
 
 // ⑦ Real Wins のテスティモニアル画像 = success-01〜06（全ビューポート共通の1カルーセルに統一）。
 // 旧 (A)方式（PC=success / モバイル=win-01〜31 出し分け）は §7 改修で廃止し、success セット6枚に集約。
@@ -13,9 +13,13 @@ const glob = (g: Record<string, unknown>) =>
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, m]) => (m as { default: ImageMetadata }).default);
 
-const successPc = glob(import.meta.glob('../assets/images/cyber/testimonial/pc/*.webp', { eager: true }));
+const successPc = glob(import.meta.glob('../assets/images/cyber/testimonial/pc/*.png', { eager: true }));
+// ⑦ ライトボックス用の高解像度（1920w相当）WebP を各画像に対して1枚生成し、data-full に埋める。
+const successFull = await Promise.all(
+  successPc.map((img) => getImage({ src: img, width: 1920, format: 'webp', quality: 90 }))
+);
 
-// ⑥ 職種カード（成功者インタビューのサムネ）。video は次メッセージで受領→差し込み。
+// ⑥ 職種カード（成功者インタビューのサムネ）。
 const roleFiles = import.meta.glob('../assets/images/cyber/job-role/*.webp', { eager: true });
 const roleImg = (stem: string) =>
   (Object.entries(roleFiles).find(([p]) => p.endsWith(`${stem}.webp`))![1] as { default: ImageMetadata }).default;
@@ -73,11 +77,9 @@ const roadmap = [
 ];
 
 // ⑩ Pricing「Ready to Start Your New Career?」（DesignSpec §5 / Q: 料金ハードコード）。
-// 月額 $129（ライブ pricing ウィジェット表示に合わせ確定）。FAQ Q2 本文の表記も $129 に統一済み。
-// 年額 $1,238（定価 $1,548 / 20% off）。
 const pricing = [
   {
-    name: 'Monthly Plan',
+    name: 'Monthly',
     price: '$129',
     unit: '/ mo',
     was: null as string | null,
@@ -87,7 +89,7 @@ const pricing = [
     badge: null as string | null,
   },
   {
-    name: 'Annual Plan',
+    name: 'Annual',
     price: '$1,238',
     unit: '/ yr',
     was: '$1,548',
@@ -106,7 +108,6 @@ const includes = [
   'Enterprise tools + exam prep',
 ];
 
-// FAQ 本文中の素朴なURLをクリック可能リンクへ。split の捕捉グループで奇数 index が URL になる。
 const URL_RE = /(https?:\/\/[^\s\])]+)/g;
 const splitUrls = (text: string) => text.split(URL_RE);
 
@@ -218,7 +219,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Watch the Cyber Range intro video on YouTube"
-        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden border border-cyber-line"
+        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden"
       >
         <Image
           src={heroVideoPoster}
@@ -276,13 +277,13 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
   <!-- ③ Live SOC + Tools（旧 Welcome to The Cyber Range!） -->
   <section class="bg-page pb-24">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl leading-tight">
+      <h2 class="font-heading font-semibold text-cyber-text text-2xl sm:text-3xl leading-tight">
         You won't practice on toy labs.<br />
         <span class="text-cyber-accent">You'll defend a live network.</span>
       </h2>
 
       <p class="mt-6">
-        <span class="inline-flex items-center gap-2 rounded-full border-[0.5px] border-cyber-win/35 bg-cyber-win/10 px-4 py-2 text-sm font-semibold text-cyber-win">
+        <span class="inline-flex items-center gap-2 rounded-2xl sm:rounded-full border-[0.5px] border-cyber-win/35 bg-cyber-win/10 px-4 py-2.5 sm:py-2 text-sm font-semibold text-cyber-win">
           ✓ Resume-backed cyber internships included — with verifiable work experience
         </span>
       </p>
@@ -308,7 +309,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
   <!-- ④ Your Roadmap to Reality（3ステップ・Concernsより前に移動 / 構造は将来の背景装飾用に温存） -->
   <section class="relative overflow-hidden bg-page py-20">
     <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center mb-12">
+      <h2 class="font-heading font-semibold text-cyber-text text-2xl sm:text-3xl leading-tight text-center mb-12">
         Your Roadmap to Reality
       </h2>
 
@@ -327,7 +328,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
   <!-- ⑤ Do you have these concerns?（強調Q&A 3件・Roadmapより後ろに移動） -->
   <section class="bg-page py-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center mb-10 leading-tight">
+      <h2 class="font-heading font-semibold text-cyber-text text-2xl sm:text-3xl text-center mb-10 leading-tight">
         The questions you're probably<br />
         asking yourself
       </h2>
@@ -385,7 +386,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
   <!-- ⑥ Success Stories & Graduate Voices（職種インタビューのサムネ6枚） -->
   <section class="bg-page py-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center">
+      <h2 class="font-heading font-semibold text-cyber-text text-2xl sm:text-3xl leading-tight text-center">
         Success Stories &amp; Graduate Voices
       </h2>
       <p class="mt-3 text-center text-gray-400">Real people. Real career changes.</p>
@@ -412,7 +413,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
             </span>
           );
           return (
-            <div class="rounded-xl overflow-hidden border border-cyber-line bg-cyber-surface">
+            <div class="rounded-xl overflow-hidden bg-cyber-surface">
               {role.video ? (
                 <a href={role.video} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${role.after} interview on YouTube`}>
                   {thumb}
@@ -421,7 +422,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
                 thumb
               )}
               {/* チケット型フッター: カード地より少し明るい帯＋左に赤の縦アクセント */}
-              <div class="border-t border-cyber-line border-l-[3px] border-l-cyber-accent bg-white/[0.04] px-4 py-3">
+              <div class="border-l-[3px] border-l-cyber-accent bg-white/[0.04] px-4 py-3">
                 <p class="text-sm text-gray-400">{role.before}</p>
                 <p class="mt-0.5 font-heading font-semibold text-cyber-win">{role.after}</p>
               </div>
@@ -435,7 +436,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
   <!-- ⑦ Real Wins from the Community（報告カルーセル / id=real-wins = C2のアンカー先） -->
   <section id="real-wins" class="bg-page py-20 scroll-mt-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center">
+      <h2 class="font-heading font-semibold text-cyber-text text-2xl sm:text-3xl leading-tight text-center">
         Real Wins. Posted by Real Members.
       </h2>
       <p class="mt-3 text-center text-gray-400">
@@ -453,10 +454,13 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
               <Image
                 src={img}
                 alt={`Member job offer ${idx + 1}`}
-                widths={[480, 768, 1024]}
+                widths={[480, 768, 1024, 1280, 1920]}
                 sizes="(min-width: 1024px) 1024px, 92vw"
+                quality={90}
                 loading="lazy"
-                class="w-full h-auto rounded-xl border border-cyber-line"
+                data-rw-image
+                data-full={successFull[idx].src}
+                class="w-full h-auto rounded-xl cursor-pointer"
               />
             </div>
           ))}
@@ -516,6 +520,56 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
       </div>
     </div>
 
+    <!-- ライトボックス（画像クリックで拡大表示 / ゼロ依存）。前後送り・背景・✕・ESC で閉じる。 -->
+    <div
+      data-rw-lightbox
+      role="dialog"
+      aria-modal="true"
+      aria-label="Enlarged member job offer"
+      class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/85 p-4"
+    >
+      <button
+        type="button"
+        data-rw-lb-close
+        aria-label="Close"
+        class="absolute top-4 right-4 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-[rgba(20,20,20,0.92)] border border-cyber-line text-white transition hover:bg-[rgba(20,20,20,1)]"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- 前後送り（既存カルーセルの送りボタンとデザインを揃える） -->
+      <button
+        type="button"
+        data-rw-lb-prev
+        aria-label="Previous image"
+        class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-[42px] h-[42px] rounded-full bg-[rgba(20,20,20,0.92)] border border-cyber-line shadow-lg transition hover:bg-[rgba(20,20,20,1)]"
+      >
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        data-rw-lb-next
+        aria-label="Next image"
+        class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-[42px] h-[42px] rounded-full bg-[rgba(20,20,20,0.92)] border border-cyber-line shadow-lg transition hover:bg-[rgba(20,20,20,1)]"
+      >
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <img data-rw-lb-img src="" alt="" class="max-w-[90vw] max-h-[90vh] w-auto h-auto rounded-lg" />
+
+      <!-- 現在位置カウンター（n / 総数） -->
+      <span
+        data-rw-lb-counter
+        class="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 rounded-full bg-[rgba(20,20,20,0.92)] border border-cyber-line px-3 py-1 text-xs text-white"
+      ></span>
+    </div>
+
     <script>
       // 依存なしカルーセル制御（送りボタン / ドット / カウンター）。
       const root = document.querySelector('[data-rw-carousel]');
@@ -564,6 +618,67 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
         slides.forEach((s) => io.observe(s));
         render(0);
       }
+
+      // ライトボックス（拡大表示モーダル）。ゼロ依存・カルーセル制御とは独立レイヤー。
+      const lb = document.querySelector('[data-rw-lightbox]');
+      const lbImg = lb?.querySelector('[data-rw-lb-img]') as HTMLImageElement | null;
+      const lbClose = lb?.querySelector('[data-rw-lb-close]');
+      const lbPrev = lb?.querySelector('[data-rw-lb-prev]');
+      const lbNext = lb?.querySelector('[data-rw-lb-next]');
+      const lbCounter = lb?.querySelector('[data-rw-lb-counter]');
+      // クリックした画像から開始できるよう、全スライド画像の高解像度版とalt を配列化しておく。
+      const lbImages = (Array.from(document.querySelectorAll('[data-rw-image]')) as HTMLImageElement[]).map(
+        (img) => ({ full: img.dataset.full || img.currentSrc || img.src, alt: img.alt })
+      );
+      const lbCount = lbImages.length;
+
+      if (lb && lbImg && lbCount > 0) {
+        let currentIndex = 0;
+
+        // 表示中の画像を差し替え。将来スワイプ送りを足しても goToIndex(i) を呼ぶだけで済む。
+        const goToIndex = (i: number) => {
+          currentIndex = (i + lbCount) % lbCount; // 端はループ（最後→最初 / 最初→最後）
+          const item = lbImages[currentIndex];
+          lbImg.src = item.full;
+          lbImg.alt = item.alt;
+          if (lbCounter) lbCounter.textContent = `${currentIndex + 1} / ${lbCount}`;
+        };
+        const isOpen = () => !lb.classList.contains('hidden');
+
+        const open = (i: number) => {
+          goToIndex(i);
+          lb.classList.remove('hidden');
+          lb.classList.add('flex');
+          document.body.style.overflow = 'hidden';
+        };
+        const close = () => {
+          lb.classList.add('hidden');
+          lb.classList.remove('flex');
+          lbImg.src = '';
+          document.body.style.overflow = '';
+        };
+
+        // どのスライドの画像をクリックしても、その画像から拡大表示を開始
+        (Array.from(document.querySelectorAll('[data-rw-image]')) as HTMLImageElement[]).forEach((img, idx) => {
+          img.addEventListener('click', () => open(idx));
+        });
+
+        // 前後送り（矢印ボタン）
+        lbPrev?.addEventListener('click', () => goToIndex(currentIndex - 1));
+        lbNext?.addEventListener('click', () => goToIndex(currentIndex + 1));
+
+        // 閉じる: 1. 背景（画像の外側）クリック
+        lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+        // 2. ✕ ボタン
+        lbClose?.addEventListener('click', close);
+        // キーボード操作: ESC で閉じる / ← → で前後送り（開いている間のみ）
+        document.addEventListener('keydown', (e) => {
+          if (!isOpen()) return;
+          if (e.key === 'Escape') close();
+          else if (e.key === 'ArrowLeft') goToIndex(currentIndex - 1);
+          else if (e.key === 'ArrowRight') goToIndex(currentIndex + 1);
+        });
+      }
     </script>
   </section>
 
@@ -573,7 +688,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
       <span class="inline-flex items-center gap-2 rounded-full border border-cyber-accent/40 bg-cyber-accent/10 px-5 py-2 text-cyber-accent font-heading font-bold tracking-wide">
         🏆 #1 Community in the Skool Games
       </span>
-      <h2 class="mt-6 font-heading font-bold text-cyber-text text-2xl sm:text-3xl leading-tight">
+      <h2 class="mt-6 font-heading font-semibold text-cyber-text text-2xl sm:text-3xl leading-tight">
         Ranked #1 out of thousands of communities.
       </h2>
 
@@ -583,7 +698,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Watch the Winners Interview on YouTube"
-        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden border border-cyber-line cursor-pointer"
+        class="group relative block max-w-2xl mx-auto mt-10 rounded-xl overflow-hidden cursor-pointer"
       >
         <Image
           src={winnersPoster}
@@ -616,13 +731,13 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
             widths={[400, 640]}
             sizes="(min-width: 768px) 420px, 80vw"
             loading="lazy"
-            class="w-full max-w-sm h-auto rounded-2xl border border-cyber-line"
+            class="w-full max-w-sm h-auto rounded-2xl"
           />
         </div>
 
         <!-- 本文 -->
         <div>
-          <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl leading-tight">
+          <h2 class="font-heading font-semibold text-cyber-text text-2xl sm:text-3xl leading-tight">
             A Word From Josh
           </h2>
           <blockquote class="mt-5 border-l-2 border-cyber-accent pl-5 text-gray-100 text-lg leading-relaxed italic">
@@ -673,7 +788,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
   <!-- ⑩ Pricing「Ready to Start Your New Career?」 -->
   <section class="bg-page py-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center">
+      <h2 class="font-heading font-semibold text-cyber-text text-2xl sm:text-3xl leading-tight text-center">
         Ready to Start Your New Career?
       </h2>
 
@@ -734,7 +849,7 @@ const faqs: { q: string; blocks: ({ type: 'p'; text: string } | { type: 'ul'; it
   <!-- ⑪ FAQ（<details>/<summary> でゼロJSアコーディオン / 全11件） -->
   <section class="bg-page py-20">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="font-heading font-bold text-cyber-text text-2xl sm:text-3xl text-center mb-12">
+      <h2 class="font-heading font-semibold text-cyber-text text-2xl sm:text-3xl leading-tight text-center mb-12">
         Frequently Asked Questions
       </h2>
 
