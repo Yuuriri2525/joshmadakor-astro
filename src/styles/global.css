@@ -34,7 +34,7 @@
   --color-cyber-accent-hover: #FF4D4D;  /* 赤ホバー */
   --color-cyber-win: #4ade80;           /* 達成記号の緑（チェック等に限定） */
   --color-cyber-surface: #141414;       /* カード面 */
-  --color-cyber-line: #475569;          /* 罫線・ボーダー */
+  --color-cyber-line: rgba(255,255,255,0.10);          /* 罫線・ボーダー */
   --color-cyber-text: #e5e5e5;          /* オフホワイト本文 */
 
   /* タイポグラフィ（Montserrat / Elementor 実フォント） */
