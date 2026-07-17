@@ -54,7 +54,7 @@ export default function MobileMenu({ exams, itTraining }: MobileMenuProps) {
       {/* Overlay Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-[100] md:hidden"
           onClick={closeMenu}
           aria-hidden="true"
         />
@@ -63,7 +63,7 @@ export default function MobileMenu({ exams, itTraining }: MobileMenuProps) {
       {/* Mobile Menu（閉時は DOM に出さない＝画面外要素による横はみ出しを防ぐ） */}
       {isOpen && (
       <div
-        className="fixed top-16 right-0 bottom-0 w-64 bg-gray-900 border-l border-gray-800 z-40 md:hidden"
+        className="fixed top-16 right-0 bottom-0 w-64 bg-gray-900 border-l border-gray-800 z-[100] md:hidden"
       >
         <nav className="p-4 space-y-4">
           <a
