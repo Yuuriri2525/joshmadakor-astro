@@ -1,19 +1,20 @@
 ---
-import { Image } from 'astro:assets';
 import MobileMenu from './MobileMenu.tsx';
-// 黒地ヘッダー用の白系ロゴ
-import logo from '../assets/images/logo-light.png';
+// joshmadakor.tech ワードマーク（黒地ヘッダー用の on-dark=白系・.tech が赤）。
+// アウトライン済み SVG なので ?url で読み込み <img> で高さ指定・幅は自動。
+import logoUrl from '../assets/images/logo/header-2.svg?url';
 
 // 外部リンク（DesignSpec §3.1）
 const IT_TRAINING_URL = 'https://coursecareers.com/joshmadakor';
-const EXAMS_URL = 'https://lognpacific.com/free-certification-practice-tests/';
+// Exams は Astro 内部ページ /exams（旧 lognpacific 外部URLから移行）
+const EXAMS_URL = '/exams';
 
 // ナビ（現行ライブと同一: Home / IT Training / Cyber Training / Exams / Blog）
 const navLinks = [
   { label: 'Home', href: '/', external: false },
   { label: 'IT Training', href: IT_TRAINING_URL, external: true },
   { label: 'Cyber Training', href: '/cyber', external: false },
-  { label: 'Exams', href: EXAMS_URL, external: true },
+  { label: 'Exams', href: EXAMS_URL, external: false },
   { label: 'Blog', href: '/blog/', external: false },
 ];
 
@@ -27,10 +28,10 @@ const isActive = (href: string, external: boolean) => {
 
 <header id="header" class="sticky top-0 z-50 bg-transparent transition-all duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
+    <div class="flex items-center justify-between h-[72px]">
       <!-- Logo -->
-      <a href="/" class="flex items-center flex-shrink-0" aria-label="LogN Pacific home">
-        <Image src={logo} alt="LogN Pacific" class="h-11 w-auto" loading="eager" />
+      <a href="/" class="flex items-center flex-shrink-0" aria-label="joshmadakor.tech home">
+        <img src={logoUrl} alt="joshmadakor.tech by LogN Pacific" class="h-14 w-auto" loading="eager" />
       </a>
 
       <!-- Navigation Links (Desktop) -->

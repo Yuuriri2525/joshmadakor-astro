@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* サイト全体のフォントは self-host（本番はホットリンク禁止・実装ブリーフ）。
+ * Inter（ホーム本文/UI）・Space Mono（eyebrow/label）・Montserrat（display=見出し／
+ * blog・cyber の本文・見出しにも使用）を @fontsource から取り込む。Montserrat は
+ * 旧 Google Fonts ホットリンク（BaseLayout）を廃し 400/600/700 を self-host に置換。
+ * @import は CSS 仕様上 @theme/@font-face より前に置く必要がある。 */
+@import "@fontsource-variable/inter";
+@import "@fontsource/space-mono/400.css";
+@import "@fontsource/space-mono/700.css";
+@import "@fontsource/montserrat/400.css";
+@import "@fontsource/montserrat/600.css";
+@import "@fontsource/montserrat/700.css";
+
 /* ブログ本文の整形（DesignSpec §6.3）。Tailwind 4 はCSSの @plugin で読み込む。
  * 記事側で `prose prose-invert` ＋ prose-* ユーティリティを使ってダークテーマに合わせる。 */
 @plugin "@tailwindcss/typography";
@@ -40,6 +52,28 @@
   /* タイポグラフィ（Montserrat / Elementor 実フォント） */
   --font-sans: "Montserrat", "Helvetica Neue", Arial, sans-serif;
   --font-heading: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+
+  /*
+   * ホームページ再設計トークン（`/` のみで使用・実装ブリーフ由来）。
+   * 既存トークン（page/accent/brand/ink 等）とは別系統で、他ページには波及させない。
+   * ブリーフの名前と一部変えているのは既存トークンとの衝突回避のため:
+   *   ブリーフ --color-bg  → --color-night（既存 --color-page と別）
+   *   ブリーフ --color-ink → --color-hi  （既存 --color-ink=#011640 と衝突するため改名）
+   * 生成ユーティリティ例: bg-night / bg-surface / border-line / text-hi / text-muted /
+   *   text-faint / bg-red / text-red / text-red-text / font-display / font-inter / font-space
+   */
+  --color-night: #050506;      /* home ページ背景 */
+  --color-surface: #111418;    /* カード面（背景より1段上） */
+  --color-line: #262a31;       /* ヘアライン境界 */
+  --color-hi: #f4f5f6;         /* 見出し・高コントラスト文字 */
+  --color-muted: #c7cbd1;      /* 本文（黒地で AA） */
+  --color-faint: #868d97;      /* キャプション・メタ */
+  --color-red: #e03131;        /* 単一ブランドアクセント */
+  --color-red-text: #ff7a68;   /* ダーク地の小さい赤文字（FREE 等） */
+
+  --font-display: "Montserrat", "Helvetica Neue", Arial, sans-serif;               /* HERO H1・セクション見出し（display face・700） */
+  --font-inter: "Inter Variable", Inter, system-ui, sans-serif;                    /* home の本文/UI */
+  --font-space: "Space Mono", ui-monospace, monospace;                             /* eyebrow/label */
 }
 
 @layer base {

@@ -1,0 +1,266 @@
+---
+/*
+ * QuizDemo — /exams Step 04 の live-demo（Security+ の1問をカーソルが自動回答 →「Correct! +10 XP」
+ * → 解説 → ループ）。出典 quiz-animation.html を当サイト仕様へ移植:
+ *   - 再配色: 青アクセント #4a9eff・XP のゴールド → サイトの赤 #e03131。成功の緑はそのまま。
+ *     背景/面/罫線は @theme トークン（night/surface/line）。フォントは Inter / Space Mono。
+ *   - カーソルはコンポーネント内 absolute（window 依存の座標計算を廃止し、ルート基準に）。
+ *   - prefers-reduced-motion 時はループせず静止した「Correct!」状態を表示。
+ *   - ID を廃し data-* ＋ルート内 querySelector に限定（ページ他要素と衝突しない）。
+ *   - IntersectionObserver で可視域に入ってから再生（初期表示コスト回避）。
+ */
+---
+
+<div class="demo-wrap" data-quizdemo>
+  <div class="live-tag"><span class="live-dot"></span>/ live preview&nbsp;·&nbsp;Security+</div>
+
+  <div class="exam-card" data-card>
+    <div class="e-nav">
+      <span class="e-nav-brand">Cyber Range</span>
+      <div class="e-nav-links">
+        <span class="e-nav-link">Career Roadmap</span>
+        <span class="e-nav-link active">Exam Practice</span>
+        <span class="e-nav-link">Resume Checker (ATS)</span>
+        <span class="e-nav-link">Leaderboard</span>
+        <span class="e-nav-link">Profile</span>
+      </div>
+      <span class="e-nav-sign">Sign out</span>
+    </div>
+
+    <div class="e-body">
+      <div class="e-meta">
+        <div class="e-meta-left">
+          <span class="e-counter">Card 1 of 20</span>
+          <span class="e-tag">Review</span>
+        </div>
+        <span class="e-obj">4.0 · Given a scenario, modify enterprise capabilities to enhance security</span>
+      </div>
+
+      <div class="e-question">A company wants to secure web traffic passing through its internet gateway and ensure users connect to websites using encrypted communication. Which protocol should be implemented on the gateway?</div>
+
+      <div class="e-choices">
+        <div class="e-choice" data-c="0"><div class="e-choice-label">FTP</div></div>
+        <div class="e-choice" data-c="1"><div class="e-choice-label">Telnet</div></div>
+        <div class="e-choice" data-c="2"><div class="e-choice-label">SNMPv1</div></div>
+        <div class="e-choice" data-c="3"><div class="e-choice-label">HTTPS</div></div>
+      </div>
+
+      <div class="e-result" data-result>
+        <span class="e-result-status">Correct!</span>
+        <span class="e-result-xp">+10 XP</span>
+      </div>
+
+      <div class="e-exp" data-exp>
+        <div class="e-exp-path">4.0 · Implementation of secure protocols: Gateway</div>
+        <div class="e-exp-head">Definition</div>
+        <div class="e-exp-body">Configuring gateway devices — proxies, firewalls, web filters — to use encrypted, authenticated communications reduces interception, tampering, and credential theft.</div>
+      </div>
+
+      <div class="e-btns" data-btns>
+        <button class="e-btn-primary" tabindex="-1">Next Card</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <span class="prog-label">Security+ mastery</span>
+    <div class="prog-track"><div class="prog-fill" data-fill></div></div>
+    <span class="prog-pct" data-pct>71%</span>
+  </div>
+
+  <div class="cursor-el" data-cursor aria-hidden="true">
+    <svg class="cursor-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 3L19 12L12 13.5L9 20L5 3Z" fill="white" stroke="#222" stroke-width="1"/>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .demo-wrap {
+    /* 当サイトのトークンへ再配色（青→赤、ゴールドXP→赤、面/罫線=@theme） */
+    --bg: var(--color-night);
+    --surface: var(--color-surface);
+    --surface-2: #1a1e24;
+    --surface-3: #20242b;
+    --border: rgba(255, 255, 255, 0.07);
+    --border-md: rgba(255, 255, 255, 0.12);
+    --text-1: var(--color-hi);
+    --text-2: var(--color-muted);
+    --text-3: var(--color-faint);
+    --accent: var(--color-red);
+    --correct-bg: rgba(34, 197, 94, 0.10);
+    --correct-bd: rgba(34, 197, 94, 0.45);
+    --correct-text: #4ade80;
+    --xp: var(--color-red);
+    --radius: 10px;
+    --radius-sm: 7px;
+    --mono: var(--font-space);
+    --sans: var(--font-inter);
+
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    font-family: var(--sans);
+  }
+
+  .live-tag { font-family: var(--mono); font-size: 10px; color: var(--text-3); display: flex; align-items: center; gap: 6px; letter-spacing: 0.04em; margin-bottom: 2px; }
+  .live-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ade80; animation: qd-pulse 2s ease-in-out infinite; }
+  @keyframes qd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+  .exam-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+
+  .e-nav { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .e-nav-brand { font-size: 13px; font-weight: 600; color: var(--text-1); letter-spacing: -.02em; }
+  .e-nav-links { display: flex; gap: 14px; }
+  .e-nav-link { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+  .e-nav-link.active { color: var(--accent); border-bottom: 1.5px solid var(--accent); padding-bottom: 1px; }
+  .e-nav-sign { font-size: 11px; color: var(--text-3); border: 1px solid var(--border); border-radius: 5px; padding: 2px 9px; }
+
+  .e-body { padding: 10px 16px; }
+  .e-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 7px; }
+  .e-meta-left { display: flex; align-items: center; gap: 7px; }
+  .e-counter { font-family: var(--mono); font-size: 10px; color: var(--text-3); }
+  .e-tag { font-family: var(--mono); font-size: 9px; color: var(--accent); background: rgba(224, 49, 49, .10); border: 1px solid rgba(224, 49, 49, .22); border-radius: 4px; padding: 1px 6px; }
+  .e-obj { font-family: var(--mono); font-size: 10px; color: var(--text-3); text-align: right; }
+
+  .e-question { font-size: 13px; font-weight: 500; color: var(--text-1); line-height: 1.45; margin-bottom: 9px; letter-spacing: -.01em; }
+
+  .e-choices { display: flex; flex-direction: column; gap: 4px; margin-bottom: 9px; }
+  .e-choice { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 12px; transition: border-color .2s, background .2s; position: relative; overflow: hidden; }
+  .e-choice-label { font-size: 13px; color: var(--text-1); font-weight: 400; }
+  .e-choice.hovering { border-color: var(--border-md); background: var(--surface-3); }
+  .e-choice.correct { background: var(--correct-bg); border-color: var(--correct-bd); }
+  .e-choice.correct .e-choice-label { color: var(--correct-text); font-weight: 500; }
+  .e-choice.dimmed { opacity: .32; }
+
+  .e-result { display: flex; align-items: center; justify-content: space-between; padding: 7px 11px; background: var(--correct-bg); border: 1px solid var(--correct-bd); border-radius: var(--radius-sm); margin-bottom: 9px; opacity: 0; transform: translateY(4px); transition: opacity .3s, transform .3s; }
+  .e-result.show { opacity: 1; transform: translateY(0); }
+  .e-result-status { font-size: 13px; font-weight: 500; color: var(--correct-text); }
+  .e-result-xp { font-size: 13px; font-weight: 500; color: var(--xp); }
+
+  .e-exp { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 13px; margin-bottom: 9px; opacity: 0; transform: translateY(6px); transition: opacity .4s ease, transform .4s ease; }
+  .e-exp.show { opacity: 1; transform: translateY(0); }
+  .e-exp-path { font-family: var(--mono); font-size: 9px; color: var(--text-3); margin-bottom: 6px; line-height: 1.5; }
+  .e-exp-head { font-size: 12px; font-weight: 500; color: var(--text-1); margin-bottom: 2px; }
+  /* Definition text は小さめ max-height ＋下端フェードで「続きがある」表現（縦を食わない） */
+  .e-exp-body { font-size: 12px; color: var(--text-2); line-height: 1.5; margin-bottom: 0; max-height: 36px; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%); mask-image: linear-gradient(to bottom, #000 45%, transparent 100%); }
+
+  .e-btns { display: flex; flex-direction: column; gap: 5px; opacity: 0; transform: translateY(4px); transition: opacity .3s, transform .3s; }
+  .e-btns.show { opacity: 1; transform: translateY(0); }
+  .e-btn-primary { width: 100%; background: var(--accent); border: none; border-radius: var(--radius-sm); color: #fff; font-size: 13px; font-weight: 500; font-family: var(--sans); padding: 8px; cursor: default; letter-spacing: -.01em; }
+
+  /* カーソル: window ではなくコンポーネント内 absolute */
+  .cursor-el { position: absolute; top: 0; left: 0; width: 20px; height: 20px; pointer-events: none; z-index: 20; transform: translate(-50%, -50%); transition: transform .08s ease; }
+  .cursor-svg { width: 100%; height: 100%; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .6)); }
+  .cursor-el.clicking { animation: qd-click .25s ease forwards; }
+  @keyframes qd-click { 0% { transform: translate(-50%, -50%) scale(1); } 40% { transform: translate(-50%, -50%) scale(.82); } 100% { transform: translate(-50%, -50%) scale(1); } }
+
+  .progress-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 14px; display: flex; align-items: center; gap: 14px; }
+  .prog-label { font-family: var(--mono); font-size: 10px; color: var(--text-3); white-space: nowrap; }
+  .prog-track { flex: 1; height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--accent); border-radius: 3px; width: 71%; transition: width .8s ease; }
+  .prog-pct { font-family: var(--mono); font-size: 10px; color: var(--text-2); white-space: nowrap; }
+
+  @media (max-width: 560px) {
+    .e-nav-links { display: none; }
+    .e-obj { display: none; }
+  }
+
+  /* モーション低減時はループを止め、静止した Correct! を表示（JS 側でも制御） */
+  @media (prefers-reduced-motion: reduce) {
+    .cursor-el { display: none; }
+    .live-dot { animation: none; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('[data-quizdemo]').forEach((root) => initQuizDemo(root as HTMLElement));
+
+  function initQuizDemo(root: HTMLElement) {
+    const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const cursor = root.querySelector('[data-cursor]') as HTMLElement;
+    const choices = Array.from(root.querySelectorAll('.e-choice')) as HTMLElement[];
+    const resultEl = root.querySelector('[data-result]') as HTMLElement;
+    const expEl = root.querySelector('[data-exp]') as HTMLElement;
+    const btnsEl = root.querySelector('[data-btns]') as HTMLElement;
+    const fill = root.querySelector('[data-fill]') as HTMLElement;
+    const pct = root.querySelector('[data-pct]') as HTMLElement;
+    const card = root.querySelector('[data-card]') as HTMLElement;
+    const CORRECT = 3; // HTTPS
+    if (!cursor || choices.length < 4 || !resultEl) return;
+
+    let curX = 0, curY = 0;
+    const rr = () => root.getBoundingClientRect();
+    const place = () => { cursor.style.left = curX + 'px'; cursor.style.top = curY + 'px'; };
+    const centerOf = (el: HTMLElement) => {
+      const r = el.getBoundingClientRect(); const b = rr();
+      return { x: r.left - b.left + r.width / 2, y: r.top - b.top + r.height / 2 };
+    };
+    const moveCursor = (toX: number, toY: number, dur: number) => new Promise<void>((res) => {
+      const sx = curX, sy = curY, st = performance.now();
+      const step = (now: number) => {
+        const t = Math.min((now - st) / dur, 1);
+        const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        curX = sx + (toX - sx) * e; curY = sy + (toY - sy) * e; place();
+        if (t < 1) requestAnimationFrame(step); else res();
+      };
+      requestAnimationFrame(step);
+    });
+    async function clickAt() {
+      // クリックはカーソルの scale アニメーションで表現（ripple は廃止）
+      cursor.classList.add('clicking');
+      await delay(250); cursor.classList.remove('clicking'); await delay(350);
+    }
+    const resetUI = () => {
+      choices.forEach((c) => { c.className = 'e-choice'; });
+      resultEl.classList.remove('show'); expEl.classList.remove('show'); btnsEl.classList.remove('show');
+    };
+    const showStatic = () => {
+      choices.forEach((c, i) => c.classList.add(i === CORRECT ? 'correct' : 'dimmed'));
+      resultEl.classList.add('show'); expEl.classList.add('show'); btnsEl.classList.add('show');
+      fill.style.width = '74%'; pct.textContent = '74%';
+      cursor.style.display = 'none';
+    };
+
+    async function loop() {
+      while (true) {
+        resetUI();
+        const b = rr(); curX = b.width * 0.5; curY = b.height * 0.92; place();
+        await delay(1600);
+        const cr = card.getBoundingClientRect(); const bb = rr();
+        await moveCursor(cr.left - bb.left + cr.width * 0.5, cr.top - bb.top + cr.height * 0.35, 900);
+        await delay(400);
+        const p0 = centerOf(choices[0]); await moveCursor(p0.x, p0.y, 700); choices[0].classList.add('hovering'); await delay(500); choices[0].classList.remove('hovering');
+        const p1 = centerOf(choices[1]); await moveCursor(p1.x, p1.y, 500); choices[1].classList.add('hovering'); await delay(350); choices[1].classList.remove('hovering');
+        const p3 = centerOf(choices[3]); await moveCursor(p3.x, p3.y, 700); await delay(300);
+        choices[3].classList.add('hovering'); await delay(500);
+        await clickAt(); choices[3].classList.remove('hovering');
+        choices[3].classList.add('correct'); choices.forEach((c, i) => { if (i !== CORRECT) c.classList.add('dimmed'); });
+        await delay(280); resultEl.classList.add('show');
+        await delay(160); expEl.classList.add('show'); btnsEl.classList.add('show');
+        fill.style.width = '74%'; pct.textContent = '74%';
+        await delay(3000);
+        card.style.transition = 'opacity .5s ease'; card.style.opacity = '0';
+        await delay(500);
+        fill.style.width = '71%'; pct.textContent = '71%';
+        await delay(200); card.style.opacity = '1'; await delay(300);
+      }
+    }
+
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const start = () => {
+      if (reduce) { showStatic(); return; }
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => loop()); else loop();
+    };
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((ents, obs) => {
+        ents.forEach((e) => { if (e.isIntersecting) { obs.disconnect(); start(); } });
+      }, { rootMargin: '200px' });
+      io.observe(root);
+    } else { start(); }
+  }
+</script>

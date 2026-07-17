@@ -1,0 +1,116 @@
+---
+/*
+ * ContentCard — ホーム「Four ways in」グリッドの再利用カード（実装ブリーフ）。
+ * 4 枚とも「カード全体が単一のクリック可能リンク」（stretched-link: CTA の <a> の ::after を
+ * inset:0 で敷く）。内側の "View details / Take exam now / Read articles" は見た目のテキスト
+ * ラベルのみで、ネストした操作要素（ボタン/リンク）は一切持たない。
+ * 4 枚は完全に同一の見た目（同じ dark surface・同じボーダー・同じホバー）。「start wherever
+ * you are」のフラット扱いに合わせ、色による強調（赤ボーダー/赤地）は付けない。
+ * 唯一の識別マークは IT Exams の FREE バッジのみ。
+ * ホバー（@media (hover:hover) のみ）: translateY(-3px) の微リフト＋ボーダーが淡い赤へ、
+ *   矢印は translateX(3px)、transition .15s ease、グローなし。
+ *   prefers-reduced-motion では transform を無効化（ボーダー色変化は残す）。
+ */
+interface Props {
+  title: string;
+  kicker?: string;
+  description: string;
+  href: string;
+  ctaLabel: string;
+  /** 後方互換のため受け取るが未使用（CTA は全カード共通のテキストラベル・見た目も 4 枚共通） */
+  variant?: 'link' | 'button';
+  featured?: boolean;
+  popular?: boolean;
+  /** IT Exams の FREE バッジ表示（唯一の識別マーク） */
+  free?: boolean;
+  external?: boolean;
+}
+
+const {
+  title,
+  kicker,
+  description,
+  href,
+  ctaLabel,
+  free = false,
+  external = false,
+} = Astro.props;
+
+const target = external ? '_blank' : undefined;
+const rel = external ? 'noopener noreferrer' : undefined;
+---
+
+<article
+  class="ccard relative flex flex-col rounded-2xl border border-line bg-surface p-5 pt-[22px] min-h-[222px] shadow-[0_1px_0_rgba(255,255,255,.03)_inset,0_14px_30px_rgba(0,0,0,.45)]"
+>
+  {free && (
+    <span
+      class="absolute top-5 right-[18px] font-space text-[.62rem] tracking-[.14em] text-red-text bg-red/15 px-[9px] py-[3px] rounded-md"
+    >
+      FREE
+    </span>
+  )}
+
+  {kicker && (
+    <div class="font-space text-[.7rem] tracking-[.06em] text-faint mb-1.5">{kicker}</div>
+  )}
+
+  <h3 class="text-[1.16rem] font-semibold tracking-[-.01em] text-hi">{title}</h3>
+
+  <p class="mt-3 text-[.92rem] leading-[1.55] text-muted">{description}</p>
+
+  <div class="mt-auto pt-[18px]">
+    <a
+      href={href}
+      target={target}
+      rel={rel}
+      aria-label={`${title}: ${ctaLabel}`}
+      class="stretch inline-flex items-center gap-1.5 font-semibold text-[.9rem] text-hi outline-none"
+    >
+      {ctaLabel}
+      <span class="arw text-red">&rarr;</span>
+    </a>
+  </div>
+</article>
+
+<style>
+  .ccard {
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .ccard .arw {
+    transition: transform 0.15s ease;
+  }
+
+  /* stretched-link: カード全体を単一 <a> のクリック領域にする（.ccard は relative） */
+  .ccard .stretch::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  /* キーボードフォーカスはカード全体に見えるアウトラインを出す */
+  .ccard .stretch:focus-visible::after {
+    outline: 2px solid #ff7a68;
+    outline-offset: 2px;
+    border-radius: 16px;
+  }
+
+  /* ホバー効果はポインタ端末のみ（タッチでは無効） */
+  @media (hover: hover) {
+    .ccard:hover {
+      transform: translateY(-3px);
+      border-color: rgba(224, 49, 49, 0.45);
+    }
+    .ccard:hover .arw {
+      transform: translateX(3px);
+    }
+  }
+
+  /* モーション低減設定では transform を無効化（ボーダー色の変化は残す） */
+  @media (prefers-reduced-motion: reduce) {
+    .ccard:hover,
+    .ccard:hover .arw {
+      transform: none;
+    }
+  }
+</style>

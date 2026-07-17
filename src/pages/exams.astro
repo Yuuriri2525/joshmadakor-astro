@@ -1,0 +1,741 @@
+
+---
+/*
+ * /exams — 無料 IT 試験対策ページ。Claude Design のモックアップ
+ * 「IT Exam Practice (standalone)」を視覚的な真実の源として、構成・レイアウト・余白・コピーを
+ * 踏襲しつつ、当プロジェクトの共通システムに移植:
+ *   - 共通 Header/Footer（joshmadakor.tech）を使用（モックの Cyber Community ナビ/フッターは不採用）
+ *   - 共通 @theme トークン（bg-night/surface/line、単一の赤 #e03131、Montserrat/Inter/Space Mono）
+ *   - タイプ: H1/セクション見出し=Montserrat(font-display) / 本文=Inter / eyebrow=Space Mono
+ *   - カードのホバーはホーム同様（微リフト＋淡い赤ボーダー・hover:hover・reduced-motion 尊重）
+ * ヒーロー＋3ステップは実プロダクトのスクショ（PNG 原本）を Astro <Image> に渡し、
+ * ビルド時に WebP/AVIF ＋レスポンシブ幅を自動生成（手動 WebP 変換はしない）。
+ * 参照: https://claude.ai/design/p/e4cccc8b-108a-4e9c-8f37-aad2e83815bd
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import QuizDemo from '../components/QuizDemo.astro';
+// /exams 実スクショ（PNG 原本・RGB）。<Image> が最適化フォーマットを生成する。
+import heroDecks from '../assets/images/exams/hero-practice-decks.png';
+import step1Community from '../assets/images/exams/step-1-join-community.png';
+import step2Credentials from '../assets/images/exams/step-2-credentials.png';
+import step3SignIn from '../assets/images/exams/step-3-sign-in.png';
+import walkthroughThumb from '../assets/images/exams/walkthrough-thumbnail.png';
+
+// Skool「Cyber Community」参加リンク（/exams 専用。/cyber の cyber-range とは別コミュニティ）
+const SKOOL_URL = 'https://www.skool.com/cyber-community/about';
+---
+
+<BaseLayout
+  title="Free IT Certification Practice Exams"
+  description="Free IT certification practice exams and tests — AZ-900, SC-900, MS-900, AI-900. Get a free Microsoft student account and start practicing in under two minutes."
+  canonical="https://joshmadakor.tech/exams"
+>
+  <div class="exams bg-night font-inter text-hi">
+    <!-- ===================== HERO ===================== -->
+    <section class="hero">
+      <div class="wrap">
+        <p class="eyebrow">/ free practice exams</p>
+        <h1 class="h1">Free IT exam practice</h1>
+        <p class="sub">Get set up in
+          
+          three quick steps, then practice real certification questions — Security+, CySA+, CCNA and more.</p>
+        <div class="hero-ctas">
+          <a href="#how" class="btn btn-primary btn-lg">
+            Start practicing <span class="arrow">&rarr;</span>
+          </a>
+        </div>
+
+        <!-- Hero スクショ（LCP: eager + fetchpriority=high）。PNG 原本→Astro が WebP/AVIF 生成 -->
+        <div class="hero-shot">
+          <Image
+            src={heroDecks}
+            alt="The Practice Decks exam app"
+            width={1600}
+            height={875}
+            widths={[640, 960, 1280, 1600]}
+            sizes="(max-width: 980px) 92vw, 940px"
+            loading="eager"
+            fetchpriority="high"
+            class="block w-full h-auto"
+          />
+        </div>
+        <p class="hero-cap">app.cyber-range.io</p>
+      </div>
+    </section>
+
+    <!-- ===================== 3 STEPS ===================== -->
+    <section id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">/ getting started</p>
+          <h2 class="h2">Start in 3 steps</h2>
+          <p class="lede">From joining to your first practice question — a few simple steps.</p>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <span class="step-num">01</span>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9.5" cy="7" r="4" />
+                <path d="M22 11h-6M19 8v6" />
+              </svg>
+            </div>
+            <h3 class="step-title">Join the community</h3>
+            <p class="step-desc">Access to the Practice Exam comes through the Cyber Community on Skool.</p>
+            <p class="step-note">Free · 8,000+ members · beginner resources</p>
+            <div class="step-action">
+              <a href={SKOOL_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                Join now <span class="arrow">&rarr;</span>
+              </a>
+              <a href="#faq" class="btn btn-text">What is the Cyber Community? <span class="arrow">&rarr;</span></a>
+            </div>
+          </article>
+
+          <article class="step">
+            <span class="step-num">02</span>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path d="m3 7 9 6 9-6" />
+              </svg>
+            </div>
+            <h3 class="step-title">Get your account</h3>
+            <p class="step-desc">Receive your free Microsoft student account by email.</p>
+            <div class="step-action">
+              <a href="#walkthrough" class="btn btn-text">See the details <span class="arrow">&darr;</span></a>
+            </div>
+          </article>
+
+          <article class="step">
+            <span class="step-num">03</span>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="14" rx="2" />
+                <path d="M8 21h8M12 18v3" />
+                <path d="m10 9 4 2-4 2z" fill="currentColor" stroke="none" />
+              </svg>
+            </div>
+            <h3 class="step-title">Start practicing</h3>
+            <p class="step-desc">Log into the Practice Exam and begin your first exam.</p>
+            <div class="step-action">
+              <a href="#walkthrough" class="btn btn-text">See the details <span class="arrow">&darr;</span></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== WALKTHROUGH (a closer look at each step) ===================== -->
+    <section id="walkthrough">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">/ detailed steps</p>
+          <h2 class="h2">A closer look at each step</h2>
+          <p class="lede">Exactly what you'll see — and what to do</p>
+        </div>
+
+        <!-- Row 1: screenshot left -->
+        <div class="walk-row">
+          <div class="walk-media">
+            <Image
+              src={step1Community}
+              alt="Joining The Cyber Community on Skool"
+              width={1600}
+              height={1250}
+              widths={[500, 760, 1000, 1600]}
+              sizes="(max-width: 880px) 90vw, 500px"
+              loading="lazy"
+              class="block w-full h-auto"
+            />
+          </div>
+          <div class="walk-text">
+            <p class="walk-tag">step 01 · join</p>
+            <h3>One form to get started</h3>
+            <p>Join the free <a href="https://www.skool.com/cyber-community/about" target="_blank" rel="noopener noreferrer">Cyber Community</a> on Skool. Answer two short questions and enter your email — that's it.</p>
+            <p class="walk-note">Note: use this same email address in Step 02 to receive your Microsoft account credentials.</p>
+          </div>
+        </div>
+
+        <!-- Row 2: text left, screenshot right -->
+        <div class="walk-row reverse">
+          <div class="walk-media">
+            <Image
+              src={step2Credentials}
+              alt="LogN Pacific Reset Credentials form"
+              width={1600}
+              height={1250}
+              widths={[500, 760, 1000, 1600]}
+              sizes="(max-width: 880px) 90vw, 500px"
+              loading="lazy"
+              class="block w-full h-auto"
+            />
+          </div>
+          <div class="walk-text">
+            <p class="walk-tag">step 02 · credentials</p>
+            <h3>Your credentials, by email</h3>
+            <p>Enter the email you used in Step 01 on <a href="https://lognpacific.z20.web.core.windows.net/#/reset-credentials" target="_blank" rel="noopener noreferrer">the credentials page</a> and click Submit. Your Microsoft student account details arrive within minutes.</p>
+          </div>
+        </div>
+
+        <!-- Row 3: screenshot left -->
+        <div class="walk-row">
+          <div class="walk-media">
+            <Image
+              src={step3SignIn}
+              alt="Sign in with Microsoft screen"
+              width={1600}
+              height={1250}
+              widths={[500, 760, 1000, 1600]}
+              sizes="(max-width: 880px) 90vw, 500px"
+              loading="lazy"
+              class="block w-full h-auto"
+            />
+          </div>
+          <div class="walk-text">
+            <p class="walk-tag">step 03 · sign in</p>
+            <h3>Sign in with Microsoft</h3>
+            <p>Go to <a href="https://app.cyber-range.io/" target="_blank" rel="noopener noreferrer">the platform</a> and sign in with the Microsoft account you received by email in Step 02. Practice exams, career roadmap, and progress tracking are all inside.</p>
+          </div>
+        </div>
+
+        <!-- Row 4 (step 04): live-demo。03 が image-left のため 04 は text-left / visual-right で交互を継続 -->
+        <div class="walk-row">
+          <div class="walk-text">
+            <p class="walk-tag">step 04 · start practicing</p>
+            <h3>Let's start</h3>
+            <p>You're in. Select a certification, pick a domain, and start answering. The Practice Exam guides you from your first question.</p>
+            <div class="walk-cta">
+              <a href="#guide" class="btn btn-text">How to use the exam <span class="arrow">&rarr;</span></a>
+            </div>
+          </div>
+          <div class="walk-demo">
+            <QuizDemo />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FEATURES ===================== -->
+    <section class="features-section">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">/ inside the Practice Exam</p>
+          <h2 class="h2">Built for steady progress</h2>
+          <p class="lede">Six features designed to help you study calmly and consistently — not to overwhelm you.</p>
+        </div>
+
+        <div class="features">
+          <div class="feat">
+            <div class="feat-icon" aria-hidden="true">
+              <!-- rectangle-stack (layers) -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3 3 8l9 5 9-5-9-5Z" /><path d="M3 12l9 5 9-5" /><path d="M3 16l9 5 9-5" />
+              </svg>
+            </div>
+            <h3>Six certification paths</h3>
+            <p>Security+, CySA+, CCNA, ITIL Foundation, AZ-900, SC-200 — with more added each quarter.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" aria-hidden="true">
+              <!-- light-bulb -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6M10 21h4" /><path d="M12 3a6 6 0 0 0-3.6 10.8c.5.4.9 1 1 1.7l.1.5h5l.1-.5c.1-.7.5-1.3 1-1.7A6 6 0 0 0 12 3Z" />
+              </svg>
+            </div>
+            <h3>Answers that actually teach</h3>
+            <p>Every question explains why wrong answers are wrong — with real-world examples tied to the exact exam objective.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" aria-hidden="true">
+              <!-- arrow-path (repeat) -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12a8 8 0 0 1 13.3-5.9L20 8" /><path d="M20 4v4h-4" /><path d="M20 12a8 8 0 0 1-13.3 5.9L4 16" /><path d="M4 20v-4h4" />
+              </svg>
+            </div>
+            <h3>Smart repetition</h3>
+            <p>Questions you get wrong come back more often. Questions you've mastered fade out. The deck adapts to you.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" aria-hidden="true">
+              <!-- squares-2x2 (grid / drag) -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+            </div>
+            <h3>Performance-based questions</h3>
+            <p>Drag-and-drop and scenario-based questions — the same format as the real exam. Not just multiple choice.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" aria-hidden="true">
+              <!-- chart-bar -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 20h18" /><rect x="6" y="10" width="3" height="8" /><rect x="11" y="6" width="3" height="12" /><rect x="16" y="13" width="3" height="5" />
+              </svg>
+            </div>
+            <h3>Deck mastery &amp; leaderboard</h3>
+            <p>Track your mastery percentage per certification. See how you rank against other community members.</p>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" aria-hidden="true">
+              <!-- check-circle -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" /><path d="M8 12.5 11 15l5-6" />
+              </svg>
+            </div>
+            <h3>Free with community access</h3>
+            <p>Every exam, every PBQ, every feature — included with your free Cyber Community membership.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== USAGE GUIDE (accordion) ===================== -->
+    <section id="guide">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">/ how to use the Practice Exam</p>
+          <h2 class="h2">How to use the Practice Exam</h2>
+          <p class="lede">Read through the steps or watch the walkthrough.</p>
+        </div>
+
+        <!-- 「読む」アコーディオンと「観る」ウォークスルーを1セクション内の2つの手段として並置 -->
+        <div class="guide-grid">
+          <div class="guide-col">
+            <p class="guide-sub">Read through</p>
+            <div class="accordion">
+              <details class="acc-item">
+                <summary class="acc-trigger"><span>How do I access the Practice Exam?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+                <div class="acc-content">After joining the Cyber Community and receiving your Microsoft student credentials, go to app.cyber-range.io and click 'Sign in with Microsoft.' The exam is accessible from the Exam Practice tab in the navigation.</div>
+              </details>
+              <details class="acc-item">
+                <summary class="acc-trigger"><span>What certifications are available?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+                <div class="acc-content">Security+, CySA+, CCNA, ITIL Foundation, AZ-900, and SC-200 — with new certification paths added each quarter. You can switch between tracks at any time.</div>
+              </details>
+              <details class="acc-item">
+                <summary class="acc-trigger"><span>How does the exam simulation work?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+                <div class="acc-content">Each certification has a deck of practice questions tied to the official exam objectives. You answer one question at a time, and the app explains why each answer is correct or incorrect — including a real-world example. Questions you get wrong come back more often until you master them.</div>
+              </details>
+              <details class="acc-item">
+                <summary class="acc-trigger"><span>Can I track my progress?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+                <div class="acc-content">Yes. Your dashboard shows deck mastery percentage per certification, earned badges, and a leaderboard showing how you rank against other community members.</div>
+              </details>
+            </div>
+          </div>
+
+          <div class="guide-col">
+            <p class="guide-sub">Watch the walkthrough</p>
+            <!-- Thumbnail facade: クリックまで Loom を読み込まない（perf）。クリックで lazy iframe に差し替え。 -->
+            <div class="video-wrap" data-video>
+              <button type="button" class="video-facade" aria-label="Play the Practice Exam walkthrough">
+                <Image
+                  src={walkthroughThumb}
+                  alt="Practice Exam walkthrough preview"
+                  width={1280}
+                  height={832}
+                  widths={[640, 960, 1280]}
+                  sizes="(max-width: 880px) 92vw, 540px"
+                  loading="lazy"
+                  class="video-thumb"
+                />
+                <span class="video-play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section id="faq" class="faq-section">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">/ frequently asked</p>
+          <h2 class="h2">Common questions</h2>
+          <p class="lede">Short, calm answers to the things people ask before joining.</p>
+        </div>
+
+        <div class="faq-grid">
+          <div class="accordion">
+            <details class="acc-item">
+              <summary class="acc-trigger"><span>What is the Cyber Community?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+              <div class="acc-content">The Cyber Community is a free group on Skool, run by Josh Madakor, with 8,000+ members. It gives you access to the Practice Exam, beginner cybersecurity courses, a community feed, and weekly calls. Think of it as the starting point — and if you later want hands-on experience with real enterprise tools like Microsoft Sentinel and Defender, that's what the paid Cyber Range is for.</div>
+            </details>
+            <details class="acc-item">
+              <summary class="acc-trigger"><span>Is this really free?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+              <div class="acc-content">Yes — the Practice Exam is included with your free Cyber Community membership. No credit card, no trial period. The Cyber Community is free forever; a separate paid membership called Cyber Range exists for those who want hands-on enterprise lab experience.</div>
+            </details>
+            <details class="acc-item">
+              <summary class="acc-trigger"><span>Do I need any technical experience to start?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+              <div class="acc-content">None at all. The platform is designed for beginners. If you can use a browser, you can start practicing today.</div>
+            </details>
+            <details class="acc-item">
+              <summary class="acc-trigger"><span>Why do I need a Microsoft account?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+              <div class="acc-content">The Practice Exam uses Microsoft authentication. Your student account is created automatically when you join — you don't need an existing Microsoft account.</div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details class="acc-item">
+              <summary class="acc-trigger"><span>What certifications can I practice for?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+              <div class="acc-content">Security+, CySA+, CCNA, ITIL Foundation, AZ-900, SC-200, and more. New certification paths are added each quarter.</div>
+            </details>
+            <details class="acc-item">
+              <summary class="acc-trigger"><span>Is my data safe?</span><span class="acc-plus" aria-hidden="true"></span></summary>
+              <div class="acc-content">Your activity is stored securely through Microsoft infrastructure. You can delete your data from your profile at any time.</div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FINAL CTA ===================== -->
+    <section id="join" class="final">
+      <div class="wrap">
+        <h2>Ready to start?</h2>
+        <a href={SKOOL_URL} target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+          Join the community <span class="arrow">&rarr;</span>
+        </a>
+        <p class="micro">Free forever · No credit card · Microsoft student account included</p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  /*
+   * モックアップ CSS の移植。カラーは共通 @theme トークン（:root に出力される CSS 変数）へ写像。
+   * --x-* はこのページ内だけのローカル別名（他ページには影響しない）。
+   */
+  .exams {
+    --x-bg: var(--color-night);           /* #050506 */
+    --x-surface: var(--color-surface);    /* #111418 */
+    --x-text: var(--color-hi);            /* #f4f5f6 */
+    --x-text-2: var(--color-muted);       /* #c7cbd1 */
+    --x-text-3: var(--color-faint);       /* #868d97 */
+    --x-border: var(--color-line);        /* #262a31 */
+    --x-border-strong: #3a4048;
+    --x-cta: var(--color-red);            /* #e03131 */
+    --x-cta-hover: var(--color-cyber-accent-hover); /* #FF4D4D */
+    --x-accent: var(--color-red);
+    --x-accent-soft: rgba(224, 49, 49, 0.12);
+    --x-radius: 8px;
+    --x-radius-lg: 12px;
+    --x-max: 1120px;
+    --x-pad: 24px;
+  }
+
+  .wrap {
+    max-width: var(--x-max);
+    margin: 0 auto;
+    padding: 0 var(--x-pad);
+  }
+
+  .arrow {
+    font-family: var(--font-space);
+    font-size: 13px;
+    opacity: 0.9;
+  }
+
+  /* ====== BUTTONS ====== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 999px; /* home のピル形状に統一 */
+    border: 1px solid transparent;
+    font-family: var(--font-inter);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    white-space: nowrap;
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--color-red-text);
+    outline-offset: 2px;
+  }
+  .btn-primary { background: var(--x-cta); color: #fff; }
+  .btn-ghost { background: transparent; color: var(--x-text); border-color: var(--x-border-strong); }
+  .btn-text { background: transparent; color: var(--x-text); padding: 0; height: auto; border: 0; }
+  .btn-lg { height: 44px; padding: 0 24px; font-size: 14px; border-radius: 999px; }
+
+  @media (hover: hover) {
+    .btn-primary:hover { background: var(--x-cta-hover); }
+    .btn-ghost:hover { background: var(--x-surface); }
+    .btn-text:hover { color: var(--x-text-2); }
+  }
+
+  /* ====== HERO ====== */
+  .hero { padding: 120px 0 128px; text-align: center; }
+  .h1 {
+    font-family: var(--font-display);
+    font-size: clamp(44px, 6.2vw, 76px);
+    line-height: 1.02;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    margin: 0 0 22px;
+    color: var(--x-text);
+  }
+  .sub {
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--x-text-2);
+    margin: 0 auto 40px;
+    max-width: 520px;
+  }
+  .hero-ctas { display: inline-flex; gap: 10px; align-items: center; justify-content: center; }
+
+  /* ====== SECTION COMMONS ====== */
+  section { padding: 96px 0; scroll-margin-top: 80px; }
+  .section-head { margin-bottom: 56px; max-width: 580px; }
+  .eyebrow {
+    font-family: var(--font-space);
+    font-size: 12px;
+    color: var(--x-accent);
+    letter-spacing: 0;
+    margin: 0 0 12px;
+  }
+  .h2 {
+    font-family: var(--font-display);
+    font-size: 30px;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin: 0 0 14px;
+    color: var(--x-text);
+  }
+  .lede { font-size: 15px; color: var(--x-text-2); margin: 0; }
+
+  /* ====== STEPS ====== */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .step {
+    position: relative;
+    border: 1px solid var(--x-border);
+    border-radius: var(--x-radius-lg);
+    padding: 28px 26px 26px;
+    background: var(--x-surface);
+    display: flex;
+    flex-direction: column;
+    min-height: 240px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .step-num { position: absolute; top: 22px; right: 24px; font-family: var(--font-space); font-size: 12px; color: var(--x-text-3); }
+  .step-icon { width: 28px; height: 28px; color: var(--x-text); margin-bottom: 28px; }
+  .step-icon svg { width: 100%; height: 100%; display: block; }
+  .step-title { font-size: 16px; font-weight: 500; margin: 0 0 6px; letter-spacing: -0.01em; color: var(--x-text); }
+  .step-desc { font-size: 14px; color: var(--x-text-2); margin: 0 0 20px; line-height: 1.55; flex: 1; }
+
+  @media (hover: hover) {
+    .step:hover { transform: translateY(-3px); border-color: rgba(224, 49, 49, 0.45); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .step:hover { transform: none; }
+  }
+
+  /* ====== WALKTHROUGH ====== */
+  .walk-row { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; padding: 48px 0; }
+  .walk-row + .walk-row { border-top: 1px solid var(--x-border); }
+  .walk-row.reverse .walk-media { order: 2; }
+  /* 実スクショのフレーム（カード同様の角丸/ボーダー）。高さは画像の自然比に追従。 */
+  .walk-media {
+    border: 1px solid var(--x-border-strong);
+    border-radius: var(--x-radius-lg);
+    background: var(--x-surface);
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 14px 34px rgba(0, 0, 0, 0.5);
+  }
+  /* 画像自体も角丸に（frame の overflow:hidden が効かない環境でも確実にクリップ・3枚統一） */
+  .walk-media :global(img) { display: block; border-radius: var(--x-radius-lg); }
+  .walk-text h3 { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 10px; line-height: 1.25; color: var(--x-text); }
+  .walk-text p { color: var(--x-text-2); margin: 0; font-size: 15px; max-width: 420px; }
+  /* 本文中インラインリンク（3ステップ共通・赤アクセント） */
+  .walk-text a { color: var(--x-cta); text-decoration: underline; text-underline-offset: 2px; }
+  .walk-tag { font-family: var(--font-space); font-size: 12px; color: var(--x-accent); margin: 0 0 14px; }
+
+  /* ====== HERO SCREENSHOT ====== */
+  .hero-shot {
+    max-width: 940px;
+    margin: 56px auto 0;
+    border: 1px solid var(--x-border);
+    border-radius: var(--x-radius-lg);
+    overflow: hidden;
+    background: var(--x-surface);
+    line-height: 0;
+  }
+  .hero-cap { font-family: var(--font-space); font-size: 12px; color: var(--x-text-3); margin: 12px 0 0; }
+
+  /* ====== ADDED ELEMENTS (Section B) ====== */
+  /* Step 01 のノート行＋複数リンク */
+  .step-note { font-family: var(--font-space); font-size: 11px; line-height: 1.5; color: var(--x-text-3); margin: 0 0 16px; }
+  .step-action { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+
+  /* Walkthrough Row1 のノート、コネクタ↓、Step04 のデモ枠・CTA */
+  .walk-note { font-size: 13px; font-style: italic; line-height: 1.55; color: var(--x-text-3); margin: 12px 0 0; max-width: 420px; }
+  .walk-cta { margin-top: 16px; }
+  /* Step 04 のデモも他ステップと同等の「枠付きカード」に（黒地に埋もれないよう境界を明示）。
+     背景はページ色にして内側の exam-card（surface）が浮くようにする。 */
+  .walk-demo {
+    min-width: 0;
+    border: 1px solid var(--x-border-strong);
+    border-radius: var(--x-radius-lg);
+    background: var(--x-bg);
+    padding: 16px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 14px 34px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Video block の lede / link */
+
+  /* ====== FEATURES ====== */
+  .features-section { background: var(--x-surface); border-top: 1px solid var(--x-border); border-bottom: 1px solid var(--x-border); }
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--x-border);
+    border-radius: var(--x-radius-lg);
+    overflow: hidden;
+    background: var(--x-bg);
+  }
+  .feat { padding: 32px 28px; border-right: 1px solid var(--x-border); border-bottom: 1px solid var(--x-border); }
+  .feat:nth-child(3n) { border-right: 0; }
+  .feat:nth-child(n+4) { border-bottom: 0; }
+  .feat-icon { width: 22px; height: 22px; color: var(--x-text); margin-bottom: 18px; }
+  .feat-icon svg { width: 100%; height: 100%; }
+  .feat h3 { font-size: 15px; font-weight: 500; margin: 0 0 6px; letter-spacing: -0.01em; color: var(--x-text); }
+  .feat p { font-size: 14px; color: var(--x-text-2); margin: 0; line-height: 1.55; }
+
+  /* ====== ACCORDION (native <details>) ====== */
+  .accordion { border-top: 1px solid var(--x-border); }
+  .acc-item { border-bottom: 1px solid var(--x-border); }
+  .acc-trigger {
+    width: 100%;
+    list-style: none;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    padding: 22px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    color: var(--x-text);
+    font-family: var(--font-inter);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    transition: color 0.15s ease;
+  }
+  .acc-trigger::-webkit-details-marker { display: none; }
+  .acc-plus { width: 14px; height: 14px; position: relative; flex-shrink: 0; color: var(--x-text-3); }
+  .acc-plus::before, .acc-plus::after { content: ""; position: absolute; background: currentColor; border-radius: 1px; }
+  .acc-plus::before { left: 0; right: 0; top: 50%; height: 1px; transform: translateY(-50%); }
+  .acc-plus::after { top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); transition: transform 0.2s ease; }
+  .acc-item[open] .acc-plus::after { transform: translateX(-50%) rotate(90deg); opacity: 0; }
+  .acc-content { padding: 0 4px 22px; color: var(--x-text-2); font-size: 14px; line-height: 1.65; max-width: 640px; }
+
+  @media (hover: hover) {
+    .acc-trigger:hover { color: var(--x-text-2); }
+  }
+
+  /* ====== HOW-TO-USE: 「読む」（accordion）＋「観る」（video）を1セクションに統合 ====== */
+  .guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .guide-sub { font-family: var(--font-display); font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--x-text-2); padding: 0 0 12px; margin: 0 0 20px; border-bottom: 1px solid var(--x-border); }
+
+  /* Walkthrough video: thumbnail facade → クリックで Loom iframe に差し替え（65.06% アスペクト） */
+  .video-wrap {
+    position: relative;
+    padding-bottom: 65.06024096385542%;
+    height: 0;
+    border: 1px solid var(--x-border);
+    border-radius: var(--x-radius-lg);
+    overflow: hidden;
+    background: var(--x-surface);
+  }
+  /* iframe は JS 生成のためスコープ属性が付かない → :global で確実に適用 */
+  .video-wrap :global(iframe) { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+  .video-facade { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; background: none; cursor: pointer; display: block; }
+  .video-facade:focus-visible { outline: 2px solid var(--color-red-text); outline-offset: 2px; }
+  .video-thumb { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .video-play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--x-cta); color: #fff;
+    display: grid; place-items: center;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .video-play svg { width: 26px; height: 26px; margin-left: 3px; }
+  @media (hover: hover) {
+    .video-facade:hover .video-play { transform: translate(-50%, -50%) scale(1.08); background: var(--x-cta-hover); }
+  }
+
+  /* FAQ two-column */
+  .faq-section { background: var(--x-surface); border-top: 1px solid var(--x-border); border-bottom: 1px solid var(--x-border); }
+  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; }
+
+  /* ====== FINAL CTA ====== */
+  .final { text-align: center; padding: 120px 0; border-top: 1px solid var(--x-border); }
+  .final h2 {
+    font-family: var(--font-display);
+    font-size: 38px;
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin: 0 auto 28px;
+    max-width: 560px;
+    color: var(--x-text);
+  }
+  .final .micro { font-size: 12px; color: var(--x-text-3); margin: 16px 0 0; }
+
+  /* ====== RESPONSIVE ====== */
+  @media (max-width: 880px) {
+    section { padding: 72px 0; }
+    .hero { padding: 72px 0 80px; }
+    .steps { grid-template-columns: 1fr; }
+    .step { min-height: 0; }
+    .walk-row { grid-template-columns: 1fr; gap: 24px; padding: 36px 0; }
+    .walk-row.reverse .walk-media { order: 0; }
+    .features { grid-template-columns: 1fr 1fr; }
+    .feat:nth-child(3n) { border-right: 1px solid var(--x-border); }
+    .feat:nth-child(2n) { border-right: 0; }
+    .feat:nth-child(n+4) { border-bottom: 1px solid var(--x-border); }
+    .feat:nth-child(n+5) { border-bottom: 0; }
+    .faq-grid { grid-template-columns: 1fr; gap: 0; }
+    .guide-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+  @media (max-width: 480px) {
+    .hero-ctas { flex-direction: column; width: 100%; }
+    .hero-ctas .btn { width: 100%; justify-content: center; }
+    .h1 { font-size: 40px; }
+    .features { grid-template-columns: 1fr; }
+    .feat { border-right: 0 !important; }
+    .feat:nth-child(n+4) { border-bottom: 1px solid var(--x-border); }
+    .feat:last-child { border-bottom: 0; }
+  }
+</style>
+
+<script>
+  // Video thumbnail facade → クリックで Loom を読み込み再生（intent まで Loom を読み込まない=perf）
+  document.querySelectorAll('[data-video]').forEach((wrap) => {
+    const btn = wrap.querySelector('.video-facade');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.loom.com/embed/ceec1d1c1e3f4549b9b5a236654033c8?autoplay=1';
+      iframe.title = 'Practice Exam walkthrough';
+      iframe.loading = 'lazy';
+      iframe.setAttribute('frameborder', '0');
+      iframe.setAttribute('allow', 'autoplay; fullscreen');
+      iframe.setAttribute('allowfullscreen', '');
+      wrap.replaceChildren(iframe);
+    }, { once: true });
+  });
+</script>

@@ -1,171 +1,50 @@
 ---
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import BackToTop from '../components/BackToTop.astro';
-import heroJosh from '../assets/images/hero-josh.webp';
-
-// ヒーローバナーのコピー（モバイル縦積み / PCオーバーレイで共有）
-const heroTitle = 'THE CYBER RANGE';
-const heroSub = 'The Best Hands-On Cyber Security Training';
-
-// 4カードナビ（現行ライブと同一の順番・コピー・リンク / DesignSpec §4.3）
-const cards = [
-  {
-    title: 'CYBER TRAINING',
-    desc: 'Gain skills and experience. Launch your career.',
-    label: 'View Course Details',
-    href: '/cyber',
-    external: false,
-  },
-  {
-    title: 'IT TRAINING',
-    desc: 'Learn cutting-edge technologies. Become a digital age professional.',
-    label: 'View Course Details',
-    href: 'https://coursecareers.com/joshmadakor',
-    external: true,
-  },
-  {
-    title: 'IT EXAMS',
-    desc: 'Test your skills for free. Prepare for certification success.',
-    label: 'Take Exam Now',
-    href: 'https://lognpacific.com/free-certification-practice-tests/',
-    external: true,
-  },
-  {
-    title: 'BLOG',
-    desc: 'Latest IT trends and expert insights. Deepen your knowledge.',
-    label: 'Read Articles',
-    href: '/blog/',
-    external: false,
-  },
-];
+import Hero from '../components/Hero.astro';
+import StartingPoints from '../components/StartingPoints.astro';
+import ClosingCTA from '../components/ClosingCTA.astro';
 ---
 
 <BaseLayout
   title="Home"
   description="Hands-on cybersecurity and IT training, certification practice, and career insights from LogN Pacific."
 >
-  <!-- 1. 上部ヒーロー見出し（黒地・中央） -->
-  <section class="bg-page py-20 sm:py-28 text-center">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 class="font-heading font-bold text-white text-3xl sm:text-5xl lg:text-6xl leading-tight">
-        Take control of your future!
-      </h1>
-    </div>
-  </section>
-
-  <!-- 2. メインヒーローバナー -->
-  <!-- モバイル(<md): (B)縦積み = 画像（Josh全体が見える）→ 黒地に白文字テキスト -->
-  <section class="md:hidden bg-page">
-    <Image
-      src={heroJosh}
-      alt="Josh Madakor — The Cyber Range"
-      widths={[480, 768]}
-      sizes="100vw"
-      quality={85}
-      class="w-full h-auto block"
-      loading="eager"
-    />
-    <div class="px-4 py-10 text-center">
-      <h2 class="font-heading font-bold text-white text-3xl leading-tight">{heroTitle}</h2>
-      <p class="mt-3 text-white/90 text-base">{heroSub}</p>
-      <a
-        href="/cyber"
-        class="inline-block mt-6 rounded-full border-2 border-white px-7 py-2.5 text-white text-sm tracking-wide hover:bg-white hover:text-black transition"
-      >
-        LEARN MORE
-      </a>
-    </div>
-  </section>
-
-  <!-- PC(md+): (A)オーバーレイ = 画像をフルブリード背景にして右側にテキストを重ねる -->
-  <section class="hidden md:flex relative w-full overflow-hidden min-h-[520px] items-center">
-    <Image
-      src={heroJosh}
-      alt=""
-      aria-hidden="true"
-      widths={[1024, 1440, 1920, 2560]}
-      sizes="100vw"
-      quality={85}
-      class="absolute inset-0 w-full h-full object-cover object-left"
-      loading="eager"
-    />
-    <!-- スクリム: 右(テキスト側)を暗くして白文字の可読性を確保。左のJoshは残す。 -->
-    <div class="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/55"></div>
-
-    <div class="relative w-full max-w-7xl mx-auto px-6 lg:px-8">
-      <div class="max-w-md ml-auto text-right py-12">
-        <h2 class="font-heading font-bold text-white text-4xl lg:text-5xl leading-tight">{heroTitle}</h2>
-        <p class="mt-3 text-white/90 text-lg">{heroSub}</p>
-        <a
-          href="/cyber"
-          class="inline-block mt-6 rounded-full border-2 border-white px-7 py-2.5 text-white text-sm tracking-wide hover:bg-white hover:text-black transition"
-        >
-          LEARN MORE
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. 4カードナビ -->
-  <section class="bg-page py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {cards.map((card) => (
-          <div class="flex flex-col text-center rounded-xl border border-white/10 bg-white/[0.03] p-8">
-            <h3 class="font-heading font-bold text-brand text-xl tracking-wide">{card.title}</h3>
-            <p class="mt-3 text-gray-300 text-sm flex-grow">{card.desc}</p>
-            <div class="mt-6">
-              <a
-                href={card.href}
-                target={card.external ? '_blank' : undefined}
-                rel={card.external ? 'noopener noreferrer' : undefined}
-                class="inline-block rounded-full bg-gradient-to-r from-btn-start to-btn-end p-[2px] transition hover:brightness-110"
-              >
-                <span class="block rounded-full bg-page px-5 py-2 text-sm text-white">
-                  {card.label}
-                </span>
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. CONTACT US（SNSリンクのみ・フォーム無し / フラグ#5） -->
-  <section class="bg-page pb-24">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="font-heading font-bold text-white text-3xl mb-8">CONTACT US</h2>
-      <div class="flex justify-center gap-6">
-        <a href="https://www.linkedin.com/in/joshmadakor/" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition" aria-label="LinkedIn">
-          <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
-            <circle cx="4" cy="4" r="2" />
-          </svg>
-        </a>
-        <a href="https://www.youtube.com/@JoshMadakor" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition" aria-label="YouTube">
-          <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.54c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z" />
-            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#000" />
-          </svg>
-        </a>
-        <a href="https://x.com/joshmadakor" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition" aria-label="X (Twitter)">
-          <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 1200 1227" xmlns="http://www.w3.org/2000/svg">
-            <path d="m714.163 519.284 446.727-519.284h-105.86l-387.893 450.887-309.809-450.887h-357.328l468.492 681.821-468.492 544.549h105.866l409.625-476.152 327.181 476.152h357.328l-485.863-707.086zm-144.998 168.544-47.468-67.894-377.686-540.2396h162.604l304.797 435.9906 47.468 67.894 396.2 566.721h-162.604l-323.311-462.446z" />
-          </svg>
-        </a>
-        <a href="https://www.instagram.com/joshmadakor/" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition" aria-label="Instagram">
-          <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2" />
-            <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37Z" fill="none" stroke="currentColor" stroke-width="2" />
-            <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
-          </svg>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. back-to-top（共有コンポーネント） -->
-  <BackToTop />
+  <!--
+    ホーム再設計（実装ブリーフ）。ホーム限定のダークトークン＋Inter/Montserrat(display)/Space を適用。
+    共通 Header/Footer はそのまま（他ページと統一）。sticky ヘッダーは CSS、フェードは任意の
+    CSS のみで prefers-reduced-motion でオフ。ゼロ JS。
+  -->
+  <div class="bg-night font-inter text-hi overflow-x-hidden">
+    <Hero />
+    <StartingPoints />
+    <ClosingCTA />
+  </div>
 </BaseLayout>
+
+<style>
+  /* 読み込み時のフェードイン（任意・CSS のみ / reduced-motion でオフ） */
+  :global(.fade) {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: fade 0.7s ease forwards;
+  }
+  :global(.fade.d1) {
+    animation-delay: 0.05s;
+  }
+  :global(.fade.d2) {
+    animation-delay: 0.13s;
+  }
+  @keyframes fade {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.fade) {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

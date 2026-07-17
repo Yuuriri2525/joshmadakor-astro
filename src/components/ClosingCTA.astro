@@ -1,0 +1,28 @@
+---
+/*
+ * ClosingCTA — ページ末尾の締め（実装ブリーフ / mockup の .closing）。
+ * eyebrow + 見出し + 副次 CTA（IT Exams ルートへ）。中央寄せ。ゼロ JS。
+ */
+// Astro 内部ページ /exams（旧 lognpacific 外部URLから移行）
+const EXAMS_URL = '/exams';
+---
+
+<section class="text-center pt-[70px] pb-16">
+  <div class="mx-auto max-w-[1200px] px-7">
+    <span class="font-space text-[.72rem] tracking-[.2em] uppercase text-red">
+      Zero experience? Start today.
+    </span>
+    <h2
+      class="mt-3.5 font-display font-bold text-hi text-[clamp(1.9rem,3.4vw,2.8rem)] tracking-[-.02em]"
+    >
+      Take control of your future.
+    </h2>
+    <a
+      href={EXAMS_URL}
+      class="group mt-7 inline-flex items-center gap-2 rounded-full bg-red px-[1.7em] py-[.92em] font-semibold text-white shadow-[0_10px_26px_rgba(224,49,49,.28)] transition hover:-translate-y-px hover:shadow-[0_14px_32px_rgba(224,49,49,.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-text focus-visible:ring-offset-2 focus-visible:ring-offset-night"
+    >
+      Start free — take an exam
+      <span class="transition-transform group-hover:translate-x-[3px]">&rarr;</span>
+    </a>
+  </div>
+</section>

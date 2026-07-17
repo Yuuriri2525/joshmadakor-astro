@@ -1,0 +1,86 @@
+---
+/*
+ * Hero — ホームのファーストビュー（実装ブリーフ / mockup 準拠）。
+ * 左に Josh 透過カットアウト（LCP。eager + fetchpriority=high）、右に eyebrow / H1 / subline / 主 CTA。
+ * 画像は下端フェードの CSS マスク＋赤の放射グロー・床のハイライトを疑似要素で再現。
+ * 2 カラム → 760px 付近で 1 カラム（モバイルは画像が上）。ゼロ JS。
+ */
+import { Image } from 'astro:assets';
+// ホーム用 Josh 透過カットアウト（縦構図 819×1000・透過 PNG）。Astro Image がビルド時に
+// 最適化 webp ＋レスポンシブ幅を生成する。/cyber の josh-portrait-tp.* とは別アセット。
+import joshCutout from '../assets/images/hero-josh-home.png';
+
+interface Props {
+  /** 主 CTA の遷移先（Cyber Range / cyber コース） */
+  ctaHref?: string;
+}
+const { ctaHref = '/cyber' } = Astro.props;
+---
+
+<section class="pt-16 pb-10 md:pt-16">
+  <div class="mx-auto max-w-[1200px] px-7">
+    <div class="grid grid-cols-1 items-center gap-6 md:grid-cols-[0.92fr_1.08fr]">
+      <!-- Portrait（モバイルは上に）
+           min-w-0: グリッドアイテム既定の min-width:auto（＝コンテンツ min-content）が
+           max-width を上書きして 0.92fr 列いっぱい（~515px）に伸ばすのを防ぐ。
+           画像自体にも max-w-[470px] を付け、列幅に関係なくキャップを厳守させる。 -->
+      <div class="portrait fade d1 order-first md:order-none relative mx-auto w-full min-w-0 max-w-[470px]">
+        <Image
+          src={joshCutout}
+          alt="Josh Madakor, cyber security educator"
+          width={819}
+          height={1000}
+          widths={[340, 400, 470, 640, 819]}
+          sizes="(max-width: 760px) 340px, 470px"
+          loading="eager"
+          fetchpriority="high"
+          class="relative z-[1] mx-auto block h-auto w-full max-w-[470px] [-webkit-mask-image:linear-gradient(to_bottom,#000_82%,transparent_99%)] [mask-image:linear-gradient(to_bottom,#000_82%,transparent_99%)]"
+        />
+      </div>
+
+      <!-- Copy -->
+      <div class="fade d2 min-w-0">
+        <span class="block mb-[18px] font-space text-[.72rem] tracking-[.2em] uppercase text-red">
+          The best hands-on cyber security training
+        </span>
+        <h1
+          class="font-display font-bold uppercase text-hi text-[clamp(2.5rem,5.1vw,4.3rem)] leading-[.98] tracking-[-.015em]"
+        >
+          Your <span class="text-red">cyber security</span> journey starts here
+        </h1>
+        <p class="mt-[22px] max-w-[34ch] text-[1.05rem] text-muted">
+          Real, hands-on training and free resources — built for people starting from zero.
+        </p>
+        <a
+          href={ctaHref}
+          class="group mt-7 inline-flex items-center gap-2 rounded-full bg-red px-[1.7em] py-[.92em] font-semibold text-white shadow-[0_10px_26px_rgba(224,49,49,.28)] transition hover:-translate-y-px hover:shadow-[0_14px_32px_rgba(224,49,49,.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-text focus-visible:ring-offset-2 focus-visible:ring-offset-night"
+        >
+          See the Cyber Range
+          <span class="transition-transform group-hover:translate-x-[3px]">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* 赤の放射グロー（画像背後）と床のハイライト（mockup の .portrait::before / ::after 再現） */
+  .portrait::before {
+    content: "";
+    position: absolute;
+    inset: 8% 4% 6% 4%;
+    background: radial-gradient(closest-side, rgba(224, 49, 49, 0.14), rgba(224, 49, 49, 0) 72%);
+    filter: blur(6px);
+    z-index: 0;
+  }
+  .portrait::after {
+    content: "";
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: 4%;
+    height: 26px;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.12), transparent 70%);
+    z-index: 0;
+  }
+</style>

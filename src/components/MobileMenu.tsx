@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 interface MobileMenuProps {
-  /** Exams 外部リンクURL（Header から渡される / DesignSpec §3.1） */
+  /** Exams ページの URL（Header から渡される。現在は内部ルート /exams） */
   exams: string;
   /** IT Training 外部リンクURL（coursecareers.com/joshmadakor） */
   itTraining: string;
@@ -91,8 +91,6 @@ export default function MobileMenu({ exams, itTraining }: MobileMenuProps) {
           </a>
           <a
             href={exams}
-            target="_blank"
-            rel="noopener noreferrer"
             className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded transition"
             onClick={closeMenu}
           >
