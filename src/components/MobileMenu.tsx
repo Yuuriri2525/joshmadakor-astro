@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface MobileMenuProps {
   /** Exams ページの URL（Header から渡される。現在は内部ルート /exams） */
@@ -51,20 +52,23 @@ export default function MobileMenu({ exams, itTraining }: MobileMenuProps) {
         </svg>
       </button>
 
-      {/* Overlay Backdrop */}
-      {isOpen && (
+      {/* オーバーレイ＋パネルは document.body へ Portal する。
+          理由: これらは #header の DOM 子だが position:fixed。スクロールで #header に
+          backdrop-filter が付くと #header が fixed 子孫の包含ブロックになり、パネルが
+          ヘッダー(72px)基準で潰れて背景塗りが消える。body 直下へ出して viewport 基準に戻す。 */}
+      {isOpen && typeof document !== 'undefined' && createPortal(
+        <>
+        {/* Overlay Backdrop */}
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-[100] md:hidden"
+          className="fixed inset-0 bg-black/50 z-[100] md:hidden"
           onClick={closeMenu}
           aria-hidden="true"
         />
-      )}
 
-      {/* Mobile Menu（閉時は DOM に出さない＝画面外要素による横はみ出しを防ぐ） */}
-      {isOpen && (
-      <div
-        className="fixed top-16 right-0 bottom-0 w-64 bg-gray-900 border-l border-gray-800 z-[100] md:hidden"
-      >
+        {/* Mobile Menu（閉時は DOM に出さない＝画面外要素による横はみ出しを防ぐ） */}
+        <div
+          className="fixed top-16 right-0 bottom-0 w-64 bg-gray-900 border-l border-gray-800 z-[100] md:hidden"
+        >
         <nav className="p-4 space-y-4">
           <a
             href="/"
@@ -174,7 +178,9 @@ export default function MobileMenu({ exams, itTraining }: MobileMenuProps) {
             </div>
           </div>
         </nav>
-      </div>
+        </div>
+        </>,
+        document.body
       )}
     </>
   );
