@@ -113,17 +113,6 @@ export default function MobileMenu({ exams, itTraining }: MobileMenuProps) {
             <p className="text-sm text-gray-400 px-4 mb-3">Follow Us</p>
             <div className="flex gap-3 px-4">
               <a
-                href="https://x.com/joshmadakor"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition"
-                aria-label="X (Twitter)"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 1200 1227">
-                  <path d="m714.163 519.284 446.727-519.284h-105.86l-387.893 450.887-309.809-450.887h-357.328l468.492 681.821-468.492 544.549h105.866l409.625-476.152 327.181 476.152h357.328l-485.863-707.086zm-144.998 168.544-47.468-67.894-377.686-540.2396h162.604l304.797 435.9906 47.468 67.894 396.2 566.721h-162.604l-323.311-462.446z" />
-                </svg>
-              </a>
-              <a
                 href="https://www.instagram.com/joshmadakor/"
                 target="_blank"
                 rel="noopener noreferrer"
