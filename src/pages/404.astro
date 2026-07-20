@@ -1,0 +1,44 @@
+---
+// カスタム 404。ビルドで dist/404.html を生成し、Cloudflare Pages が存在しないパスへ
+// 正しい 404 を返せるようにする（フォールバックで TOP が 200 表示される問題の解消）。
+// 共有レイアウト（Header/Footer 込み）を流用し、サイトのデザイン言語に統一。
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// 主要導線への副リンク（Home は下の赤ピルボタン、その他はテキストリンク）。
+const links = [
+  { label: 'Cyber Training', href: '/cyber' },
+  { label: 'Exams', href: '/exams' },
+  { label: 'Blog', href: '/blog/' },
+];
+---
+
+<BaseLayout
+  title="404 Not Found"
+  description="The page you're looking for doesn't exist or has moved."
+  noindex
+>
+  <section class="mx-auto flex min-h-[68vh] max-w-3xl flex-col items-center justify-center px-4 py-24 text-center">
+    <p class="font-space text-xs uppercase tracking-[0.2em] text-[#e03131]/70">error 404</p>
+    <p class="mt-4 font-display text-[6rem] font-bold leading-none text-gray-300 sm:text-[8rem]">404</p>
+    <h1 class="mt-3 font-display text-2xl font-semibold tracking-tight text-hi sm:text-3xl">
+      This page doesn't exist.
+    </h1>
+    <p class="mt-4 max-w-md text-muted">
+      The link may be broken or the page may have moved. Let's get you back on track.
+    </p>
+
+    <a
+      href="/"
+      class="group mt-8 inline-flex items-center gap-2 rounded-full bg-red px-[1.7em] py-[.92em] font-semibold text-white shadow-[0_10px_26px_rgba(224,49,49,.28)] transition hover:-translate-y-px hover:shadow-[0_14px_32px_rgba(224,49,49,.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-text focus-visible:ring-offset-2 focus-visible:ring-offset-night"
+    >
+      Back to home
+      <span class="transition-transform group-hover:translate-x-[3px]">&rarr;</span>
+    </a>
+
+    <nav class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+      {links.map((link) => (
+        <a href={link.href} class="text-muted hover:text-white transition">{link.label}</a>
+      ))}
+    </nav>
+  </section>
+</BaseLayout>

@@ -8,9 +8,11 @@ export interface Props {
   description: string;
   ogImage?: string;
   canonical?: string;
+  /** true のとき <meta name="robots" content="noindex"> を出力（404 等・既定 false で他ページ不変） */
+  noindex?: boolean;
 }
 
-const { title, description, ogImage = '/og-image.png', canonical } = Astro.props;
+const { title, description, ogImage = '/og-image.png', canonical, noindex = false } = Astro.props;
 const siteUrl = 'https://joshmadakor.tech';
 ---
 
@@ -19,7 +21,7 @@ const siteUrl = 'https://joshmadakor.tech';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title} - LogN Pacific</title>
+    <title>{title} - JoshMadakor.tech</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#000000" />
 
@@ -39,6 +41,7 @@ const siteUrl = 'https://joshmadakor.tech';
 
     <!-- Canonical URL -->
     {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
 
     <!-- フォントは global.css で self-host（@fontsource: Inter / Space Mono / Montserrat 400/600/700）。
          Google Fonts へのホットリンクは廃止（本番は self-host のみ）。 -->
